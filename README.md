@@ -155,29 +155,6 @@ npx http-server .
 
 ---
 
-## ☁️ Deploying to Hugging Face Spaces
-
-Audio Trimmer can be hosted as a **Static Space** because it does not require a backend server.
-
-### Steps
-
-1. Create a new Space on Hugging Face.
-2. Select **Static** as the Space SDK.
-3. Upload or push the project files:
-
-   * `index.html`
-   * `style.css`
-   * `script.js`
-   * `README.md`
-4. Wait for the Space to build and deploy.
-5. Open the generated Space URL.
-
-Since all processing is performed in the browser, the application does not require a dedicated backend or server-side audio processing.
-
-> **Important:** Hosting availability, quotas, and platform policies can change. Check Hugging Face's current Space documentation for the latest limits and terms.
-
----
-
 ## 🔐 Privacy
 
 Audio Trimmer is designed to process audio **locally in the browser**.
