@@ -594,16 +594,45 @@
   }
 
   function wireTypedTimeInput(el, target) {
+    // Whether the mouseup that's about to happen is the one that focused
+    // this field (as opposed to a click while it was already focused).
+    let selectOnMouseUp = false;
+    let skipNextBlurCommit = false;
+
+    el.addEventListener("mousedown", () => {
+      selectOnMouseUp = document.activeElement !== el;
+    });
+
     el.addEventListener("focus", () => el.select());
-    el.addEventListener("blur", () => commitTypedTime(target));
+
+    el.addEventListener("mouseup", (e) => {
+      // Browsers place the caret at the click point on mouseup, which
+      // otherwise instantly undoes the select() above — so clicking into
+      // the field never actually selected the value for the user to type
+      // over. Suppressing that one default keeps the "click to select all"
+      // behavior working, while later clicks (already focused) still place
+      // the caret normally so users can fine-edit a single digit.
+      if (selectOnMouseUp) {
+        e.preventDefault();
+        selectOnMouseUp = false;
+      }
+    });
+
+    el.addEventListener("blur", () => {
+      if (skipNextBlurCommit) { skipNextBlurCommit = false; return; }
+      commitTypedTime(target);
+    });
+
     el.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         commitTypedTime(target);
+        skipNextBlurCommit = true; // avoid committing a second time on blur
         el.blur();
       } else if (e.key === "Escape") {
         e.preventDefault();
         updateCounters(); // discard edits
+        skipNextBlurCommit = true;
         el.blur();
       }
     });
