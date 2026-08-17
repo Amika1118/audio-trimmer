@@ -233,8 +233,8 @@ See [LICENSE](LICENSE) for the complete license text.
 
 **Amika Alankara**
 
-* GitHub: [Amika1118](https://github.com/Amika1118)
-* Hugging Face: [Amika1118](https://huggingface.co/Amika1118)
+* GitHub: [Amika Alankara](https://github.com/Amika1118)
+* Hugging Face: [Amika Alankara](https://huggingface.co/amika-alankara)
 
 ---
 
