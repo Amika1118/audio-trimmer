@@ -2,7 +2,7 @@
 
 # ✂️ Audio Trimmer
 
-**Precise, in-browser audio editing — no uploads, no backend.**
+**Precise, in-browser audio editing - no uploads, no backend.**
 
 [![Status](https://img.shields.io/badge/Status-Stable-brightgreen)](https://github.com/Amika1118/audio-trimmer)
 [![Built With](https://img.shields.io/badge/Built%20With-Vanilla%20JavaScript-f7df1e)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -108,12 +108,12 @@ audio-trimmer/
 
 ## 🛠️ Tech Stack
 
-* **HTML5** — Application structure
-* **CSS3** — Responsive UI and visual design
-* **Vanilla JavaScript** — Application logic
-* **Web Audio API** — Audio decoding and playback
-* **Canvas API** — Waveform and minimap rendering
-* **lamejs** — Client-side MP3 encoding
+* **HTML5** - Application structure
+* **CSS3** - Responsive UI and visual design
+* **Vanilla JavaScript** - Application logic
+* **Web Audio API** - Audio decoding and playback
+* **Canvas API** - Waveform and minimap rendering
+* **lamejs** - Client-side MP3 encoding
 
 The application does not require a frontend framework or backend server.
 

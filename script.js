@@ -549,19 +549,22 @@
   /* ---------------- Typed time entry (IN / OUT) ---------------- */
 
   // Accepts "mm:ss.mmm", "h:mm:ss.mmm", "mm:ss", or plain seconds "12.5".
+  // A blank segment (e.g. mid-edit, ":23.456") counts as 0 rather than
+  // invalid, since segment editing can briefly leave a part empty.
   function parseTimeString(str) {
     const s = (str || "").trim();
     if (!s) return null;
     const parts = s.split(":").map((p) => p.trim());
-    if (parts.length > 3 || parts.some((p) => p === "" || isNaN(Number(p)))) return null;
+    if (parts.length > 3 || parts.some((p) => p !== "" && isNaN(Number(p)))) return null;
+    const nums = parts.map((p) => (p === "" ? 0 : parseFloat(p)));
 
     let seconds;
-    if (parts.length === 1) {
-      seconds = parseFloat(parts[0]);
-    } else if (parts.length === 2) {
-      seconds = parseInt(parts[0], 10) * 60 + parseFloat(parts[1]);
+    if (nums.length === 1) {
+      seconds = nums[0];
+    } else if (nums.length === 2) {
+      seconds = Math.trunc(nums[0]) * 60 + nums[1];
     } else {
-      seconds = parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseFloat(parts[2]);
+      seconds = Math.trunc(nums[0]) * 3600 + Math.trunc(nums[1]) * 60 + nums[2];
     }
     return isFinite(seconds) && seconds >= 0 ? seconds : null;
   }
@@ -593,29 +596,69 @@
     setStatus("");
   }
 
-  function wireTypedTimeInput(el, target) {
-    // Whether the mouseup that's about to happen is the one that focused
-    // this field (as opposed to a click while it was already focused).
-    let selectOnMouseUp = false;
-    let skipNextBlurCommit = false;
+  // Splits a rendered "MM:SS.mmm" string into its three editable parts,
+  // by locating the separators rather than assuming fixed widths (MM can
+  // be more than 2 digits for long tracks).
+  function timeSegments(value) {
+    const colon = value.indexOf(":");
+    const dot = value.indexOf(".", colon + 1);
+    if (colon === -1 || dot === -1) return null;
+    return [
+      { name: "mm", start: 0, end: colon },
+      { name: "ss", start: colon + 1, end: dot },
+      { name: "ms", start: dot + 1, end: value.length },
+    ];
+  }
 
-    el.addEventListener("mousedown", () => {
-      selectOnMouseUp = document.activeElement !== el;
+  // Which segment a caret index falls in (a click/caret landing exactly on
+  // a separator snaps to the segment right after it).
+  function segmentAt(segments, index) {
+    for (const seg of segments) if (index <= seg.end) return seg;
+    return segments[segments.length - 1];
+  }
+
+  function wireTypedTimeInput(el, target) {
+    let skipNextBlurCommit = false;
+    let activeSeg = null;    // segment currently scoped for editing
+    let freshEntry = true;   // next digit overwrites the segment vs. appending to it
+    let activeMaxLen = 2;    // digit cap for the active segment, captured once at entry
+
+    function selectSegment(seg) {
+      activeSeg = seg;
+      freshEntry = true;
+      el.setSelectionRange(seg.start, seg.end);
+    }
+
+    // Rewrites just one segment's text in place and returns its new
+    // {name, start, end}, since replacing it can shift later segments.
+    function writeSegment(seg, digits) {
+      el.value = el.value.slice(0, seg.start) + digits + el.value.slice(seg.end);
+      return { name: seg.name, start: seg.start, end: seg.start + digits.length };
+    }
+
+    el.addEventListener("focus", () => {
+      // Keyboard focus (Tab) has no click position to derive a segment
+      // from, so land on minutes by default; a mouse click is handled
+      // by the mouseup listener below instead, once the click lands.
+      if (el.dataset.mouseFocusing === "1") return;
+      const segs = timeSegments(el.value);
+      if (segs) selectSegment(segs[0]);
     });
 
-    el.addEventListener("focus", () => el.select());
+    el.addEventListener("mousedown", () => {
+      el.dataset.mouseFocusing = "1";
+    });
 
     el.addEventListener("mouseup", (e) => {
-      // Browsers place the caret at the click point on mouseup, which
-      // otherwise instantly undoes the select() above — so clicking into
-      // the field never actually selected the value for the user to type
-      // over. Suppressing that one default keeps the "click to select all"
-      // behavior working, while later clicks (already focused) still place
-      // the caret normally so users can fine-edit a single digit.
-      if (selectOnMouseUp) {
-        e.preventDefault();
-        selectOnMouseUp = false;
-      }
+      // Browsers finalize the click's caret position on mouseup, which
+      // would otherwise instantly collapse any selection we set — so
+      // clicking a specific group never actually selected it. Overriding
+      // that default is what lets a click on "23" select just the seconds
+      // (and a click on "456" select just the milliseconds, etc.).
+      delete el.dataset.mouseFocusing;
+      e.preventDefault();
+      const segs = timeSegments(el.value);
+      if (segs) selectSegment(segmentAt(segs, el.selectionStart));
     });
 
     el.addEventListener("blur", () => {
@@ -629,12 +672,105 @@
         commitTypedTime(target);
         skipNextBlurCommit = true; // avoid committing a second time on blur
         el.blur();
-      } else if (e.key === "Escape") {
+        return;
+      }
+      if (e.key === "Escape") {
         e.preventDefault();
         updateCounters(); // discard edits
         skipNextBlurCommit = true;
         el.blur();
+        return;
       }
+      // Leave copy/paste/select-all and other modified shortcuts to the browser.
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const segs = timeSegments(el.value);
+      if (!segs) return; // shouldn't happen, but don't fight an unexpected value
+
+      const s = el.selectionStart, en = el.selectionEnd;
+      const seg = segmentAt(segs, s);
+      // Only intercept the keystroke when the selection sits inside one
+      // segment; a broader selection (e.g. after Ctrl+A) falls through to
+      // normal free-form text editing, which commitTypedTime still accepts.
+      if (s !== en && segmentAt(segs, en) !== seg) return;
+
+      if (/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        const sameSeg = activeSeg && activeSeg.name === seg.name && !freshEntry;
+        // Capture the digit cap fresh the moment a segment starts being
+        // edited (2 for mm/ss, 3 for ms — or wider if mm is already long).
+        // Reusing that same cap for every keystroke in this session (rather
+        // than re-measuring the segment's current, already-shrunk text)
+        // is what lets "9" then "0" produce "90" instead of just "0".
+        const maxLen = sameSeg ? activeMaxLen : Math.max(seg.end - seg.start, 1);
+        let digits = sameSeg ? el.value.slice(seg.start, seg.end) + e.key : e.key;
+        if (digits.length > maxLen) digits = digits.slice(-maxLen);
+        activeMaxLen = maxLen;
+        const newSeg = writeSegment(seg, digits);
+
+        if (digits.length >= maxLen) {
+          const freshSegs = timeSegments(el.value);
+          const idx = freshSegs.findIndex((sg) => sg.name === newSeg.name);
+          if (idx < freshSegs.length - 1) selectSegment(freshSegs[idx + 1]);
+          else { activeSeg = newSeg; freshEntry = true; el.setSelectionRange(newSeg.end, newSeg.end); }
+        } else {
+          activeSeg = newSeg;
+          freshEntry = false;
+          el.setSelectionRange(newSeg.end, newSeg.end);
+        }
+        return;
+      }
+
+      if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault();
+        let digits = el.value.slice(seg.start, seg.end);
+        if (digits.length > 0) {
+          digits = digits.slice(0, -1);
+          const newSeg = writeSegment(seg, digits);
+          activeSeg = newSeg;
+          freshEntry = false;
+          el.setSelectionRange(newSeg.end, newSeg.end);
+        } else if (e.key === "Backspace") {
+          const idx = segs.findIndex((sg) => sg.name === seg.name);
+          if (idx > 0) {
+            const prevSeg = segs[idx - 1];
+            const newSeg = writeSegment(prevSeg, el.value.slice(prevSeg.start, prevSeg.end).slice(0, -1));
+            activeSeg = newSeg;
+            freshEntry = false;
+            el.setSelectionRange(newSeg.end, newSeg.end);
+          }
+        }
+        return;
+      }
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        const idx = segs.findIndex((sg) => sg.name === seg.name);
+        const nextIdx = idx + (e.key === "ArrowLeft" ? -1 : 1);
+        if (nextIdx >= 0 && nextIdx < segs.length) selectSegment(segs[nextIdx]);
+        return;
+      }
+
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault();
+        const width = seg.end - seg.start || (seg.name === "ms" ? 3 : 2);
+        const capMax = seg.name === "ss" ? 59 : seg.name === "ms" ? 999 : Infinity;
+        let val = parseInt(el.value.slice(seg.start, seg.end) || "0", 10) || 0;
+        val = clamp(val + (e.key === "ArrowUp" ? 1 : -1), 0, capMax);
+        const newSeg = writeSegment(seg, String(val).padStart(width, "0"));
+        selectSegment(newSeg);
+        return;
+      }
+
+      if (e.key === ":" || e.key === ".") {
+        // Typing the literal separator jumps to the next segment, a nice
+        // shorthand so users don't have to reach for the arrow keys.
+        e.preventDefault();
+        const idx = segs.findIndex((sg) => sg.name === seg.name);
+        if (idx < segs.length - 1) selectSegment(segs[idx + 1]);
+        return;
+      }
+      // Anything else (Tab, Home/End, etc.) is left to default behavior.
     });
   }
 
