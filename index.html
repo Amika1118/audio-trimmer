@@ -12,6 +12,13 @@
 </head>
 <body>
 
+<div id="loadingOverlay" class="loading-overlay" hidden aria-live="assertive" role="status">
+  <div class="loading-meter" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p id="loadingText" class="loading-text">Reading file&hellip;</p>
+</div>
+
 <div class="app">
 
   <header class="hero">
@@ -29,6 +36,7 @@
     <p class="drop-title">Drop an audio file here</p>
     <p class="drop-sub">or click to browse &middot; MP3, WAV, M4A, OGG, FLAC</p>
     <input type="file" id="fileInput" accept="audio/*" hidden />
+    <p id="dropzoneStatus" class="dropzone-status" role="alert" hidden></p>
   </section>
 
   <section id="bench" class="bench" hidden>
@@ -59,8 +67,16 @@
     </div>
 
     <div class="counters" aria-live="polite">
-      <div class="counter"><span class="counter-label">IN</span><span id="counterIn" class="counter-value">00:00.000</span></div>
-      <div class="counter"><span class="counter-label">OUT</span><span id="counterOut" class="counter-value">00:00.000</span></div>
+      <div class="counter">
+        <span class="counter-label">IN</span>
+        <input id="counterIn" class="counter-value counter-input" type="text" value="00:00.000"
+               maxlength="12" autocomplete="off" spellcheck="false" aria-label="Trim start time, editable, format minutes:seconds.milliseconds" />
+      </div>
+      <div class="counter">
+        <span class="counter-label">OUT</span>
+        <input id="counterOut" class="counter-value counter-input" type="text" value="00:00.000"
+               maxlength="12" autocomplete="off" spellcheck="false" aria-label="Trim end time, editable, format minutes:seconds.milliseconds" />
+      </div>
       <div class="counter"><span class="counter-label">SEL</span><span id="counterSel" class="counter-value">00:00.000</span></div>
       <div class="counter counter-pos"><span class="counter-label">POS</span><span id="counterPos" class="counter-value">00:00.000</span></div>
       <div class="counter"><span class="counter-label">TOTAL</span><span id="counterTotal" class="counter-value">00:00.000</span></div>
@@ -115,6 +131,7 @@
         <div><kbd>&#8592;</kbd> / <kbd>&#8594;</kbd> nudge focused handle 10ms</div>
         <div><kbd>Shift</kbd> + arrow nudge 500ms</div>
         <div><kbd>Esc</kbd> stop playback</div>
+        <div>Click <b>IN</b> / <b>OUT</b> to type an exact time</div>
       </div>
     </details>
 

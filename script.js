@@ -47,6 +47,10 @@
   const btnExport     = document.getElementById("btnExport");
   const statusMsg      = document.getElementById("statusMsg");
 
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  const loadingText     = document.getElementById("loadingText");
+  const dropzoneStatus  = document.getElementById("dropzoneStatus");
+
   /* ---------------- State ---------------- */
 
   let audioCtx = null;
@@ -78,6 +82,8 @@
 
   const MIN_GAP = 0.005; // seconds, minimum selection width
 
+  let isLoading = false; // prevent concurrent loads
+
   /* ---------------- Utilities ---------------- */
 
   function formatTime(sec) {
@@ -93,6 +99,28 @@
   function setStatus(msg, isError = false) {
     statusMsg.textContent = msg || "";
     statusMsg.classList.toggle("error", !!isError);
+  }
+
+  function setDropzoneError(msg) {
+    dropzoneStatus.textContent = msg || "";
+    dropzoneStatus.hidden = !msg;
+  }
+
+  function showLoading(text) {
+    loadingText.textContent = text;
+    loadingOverlay.hidden = false;
+  }
+
+  function hideLoading() {
+    loadingOverlay.hidden = true;
+  }
+
+  // Resolves after the browser has had a chance to paint (two rAFs is more
+  // reliable than one for guaranteeing a layout/paint actually happened).
+  function nextPaint() {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
   }
 
   function ensureAudioCtx() {
@@ -131,14 +159,23 @@
     bench.hidden = true;
     dropzone.hidden = false;
     fileInput.value = "";
+    setDropzoneError("");
   });
 
   async function loadFile(file) {
-    setStatus("Decoding audio\u2026");
+    if (isLoading) return;
+    isLoading = true;
+
+    setDropzoneError("");
+    showLoading("Reading file\u2026");
     try {
       ensureAudioCtx();
       const arrayBuffer = await file.arrayBuffer();
+
+      showLoading("Decoding audio\u2026");
+      await nextPaint();
       const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+
       audioBuffer = decoded;
       duration = decoded.duration;
       sourceFileName = file.name.replace(/\.[^/.]+$/, "") || "track";
@@ -154,6 +191,8 @@
       dropzone.hidden = true;
       bench.hidden = false;
 
+      showLoading("Rendering waveform\u2026");
+      await nextPaint();
       peaksCache = computePeaks(audioBuffer, 20000);
       overviewDrawn = false;
 
@@ -161,15 +200,20 @@
       zoomRange.value = "1";
       zoomValue.textContent = "1.0\u00d7";
 
-      requestAnimationFrame(() => {
-        layoutWaveform();
-        drawOverview();
-        updateCounters();
-        setStatus("");
-      });
+      await nextPaint();
+      layoutWaveform();
+      drawOverview();
+      updateCounters();
+      setStatus("");
     } catch (err) {
       console.error(err);
-      setStatus("Couldn't decode that file. Try a standard MP3, WAV, M4A, OGG or FLAC.", true);
+      audioBuffer = null;
+      bench.hidden = true;
+      dropzone.hidden = false;
+      setDropzoneError("Couldn't decode that file. Try a standard MP3, WAV, M4A, OGG or FLAC.");
+    } finally {
+      hideLoading();
+      isLoading = false;
     }
   }
 
@@ -225,11 +269,12 @@
   function layoutWaveform() {
     if (!audioBuffer) return;
     const baseWidth = waveformPanel.clientWidth;
+    if (baseWidth < 1) return;          // guard against zero-width
     const width = Math.max(baseWidth, Math.round(baseWidth * zoom));
-    const height = waveformPanel.clientHeight;
+    const height = waveformPanel.clientHeight || 1; // fallback
     const dpr = window.devicePixelRatio || 1;
 
-    pxPerSec = width / duration;
+    pxPerSec = width / duration;        // duration > 0 guaranteed
 
     waveCanvas.width = Math.round(width * dpr);
     waveCanvas.height = Math.round(height * dpr);
@@ -249,7 +294,7 @@
     ctx.clearRect(0, 0, width, height);
 
     const mid = height / 2;
-    const barPxWidth = 2.2; // target visual density, independent of zoom
+    const barPxWidth = 2.2;
     const n = Math.max(80, Math.floor(width / barPxWidth));
     const peaks = resamplePeaks(peaksCache, n);
 
@@ -257,7 +302,6 @@
     ctx.strokeStyle = "rgba(95,168,160,0.55)";
     ctx.lineWidth = 1;
 
-    // Draw mirrored bar waveform, one bar per pixel column
     const barGap = 1;
     const barWidth = Math.max(1, width / n - barGap);
     const grad = ctx.createLinearGradient(0, 0, 0, height);
@@ -282,8 +326,10 @@
   }
 
   function drawOverview() {
+    if (!overviewCanvas) return;
     const width = overviewCanvas.clientWidth;
-    const height = overviewCanvas.clientHeight;
+    if (width < 1) return;
+    const height = overviewCanvas.clientHeight || 1;
     const dpr = window.devicePixelRatio || 1;
     overviewCanvas.width = Math.round(width * dpr);
     overviewCanvas.height = Math.round(height * dpr);
@@ -494,11 +540,77 @@
   /* ---------------- Counters ---------------- */
 
   function updateCounters() {
-    counterIn.textContent = formatTime(selStart);
-    counterOut.textContent = formatTime(selEnd);
+    counterIn.value = formatTime(selStart);
+    counterOut.value = formatTime(selEnd);
     counterSel.textContent = formatTime(Math.max(0, selEnd - selStart));
     counterTotal.textContent = formatTime(duration);
   }
+
+  /* ---------------- Typed time entry (IN / OUT) ---------------- */
+
+  // Accepts "mm:ss.mmm", "h:mm:ss.mmm", "mm:ss", or plain seconds "12.5".
+  function parseTimeString(str) {
+    const s = (str || "").trim();
+    if (!s) return null;
+    const parts = s.split(":").map((p) => p.trim());
+    if (parts.length > 3 || parts.some((p) => p === "" || isNaN(Number(p)))) return null;
+
+    let seconds;
+    if (parts.length === 1) {
+      seconds = parseFloat(parts[0]);
+    } else if (parts.length === 2) {
+      seconds = parseInt(parts[0], 10) * 60 + parseFloat(parts[1]);
+    } else {
+      seconds = parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseFloat(parts[2]);
+    }
+    return isFinite(seconds) && seconds >= 0 ? seconds : null;
+  }
+
+  function commitTypedTime(target) {
+    if (!audioBuffer) return;
+    const el = target === "start" ? counterIn : counterOut;
+    const parsed = parseTimeString(el.value);
+
+    if (parsed === null) {
+      setStatus("Enter a time like 1:23.500 or a number of seconds.", true);
+      updateCounters(); // revert to last valid value
+      return;
+    }
+
+    let clamped, changed;
+    if (target === "start") {
+      clamped = clamp(parsed, 0, Math.max(0, selEnd - MIN_GAP));
+      changed = Math.abs(clamped - selStart) > 0.0005;
+      if (changed) { pushHistory(); selStart = clamped; }
+    } else {
+      clamped = clamp(parsed, selStart + MIN_GAP, duration);
+      changed = Math.abs(clamped - selEnd) > 0.0005;
+      if (changed) { pushHistory(); selEnd = clamped; }
+    }
+
+    if (changed) layoutHandles();
+    updateCounters();
+    setStatus("");
+  }
+
+  function wireTypedTimeInput(el, target) {
+    el.addEventListener("focus", () => el.select());
+    el.addEventListener("blur", () => commitTypedTime(target));
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        commitTypedTime(target);
+        el.blur();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        updateCounters(); // discard edits
+        el.blur();
+      }
+    });
+  }
+
+  wireTypedTimeInput(counterIn, "start");
+  wireTypedTimeInput(counterOut, "end");
 
   /* ---------------- Playback ---------------- */
 
@@ -516,6 +628,11 @@
 
   function playRange(from, to, { loop = false, label } = {}) {
     if (!audioBuffer) return;
+    // Guard against zero-length or negative durations
+    if (to - from < 0.001) {
+      setStatus("Selection too short to play.", true);
+      return;
+    }
     ensureAudioCtx();
     stopPlayback();
 
