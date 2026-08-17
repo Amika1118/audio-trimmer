@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Audio Trimmer — Splice &amp; Export</title>
+<meta name="description" content="A precise, entirely-in-browser audio trimmer. Load a track, set in/out points on the waveform, and export the cut. No uploads, no server." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <header class="hero">
+    <p class="eyebrow">MODEL AT&#8209;01 &middot; SIGNAL BENCH</p>
+    <h1>Audio Trimmer</h1>
+    <p class="tagline">Load a take, mark the splice, export the cut. Nothing ever leaves your browser.</p>
+  </header>
+
+  <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose an audio file to load">
+    <svg class="drop-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <path d="M24 6v24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M15 15l9-9 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8 30v8a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2v-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="drop-title">Drop an audio file here</p>
+    <p class="drop-sub">or click to browse &middot; MP3, WAV, M4A, OGG, FLAC</p>
+    <input type="file" id="fileInput" accept="audio/*" hidden />
+  </section>
+
+  <section id="bench" class="bench" hidden>
+
+    <div class="track-info">
+      <span id="fileName" class="file-name">&mdash;</span>
+      <button id="changeFile" class="link-btn" type="button">Load a different file</button>
+    </div>
+
+    <div class="waveform-shell">
+      <div id="waveformPanel" class="waveform-panel">
+        <canvas id="waveCanvas"></canvas>
+        <div id="handles" class="handles-layer">
+          <div id="regionShade" class="region-shade"></div>
+          <div id="handleStart" class="handle handle-start" tabindex="0" role="slider"
+               aria-label="Trim start point" aria-valuemin="0"></div>
+          <div id="handleEnd" class="handle handle-end" tabindex="0" role="slider"
+               aria-label="Trim end point" aria-valuemin="0"></div>
+          <div id="playhead" class="playhead"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-shell">
+      <canvas id="overviewCanvas" class="overview-canvas"></canvas>
+      <div id="overviewRegion" class="overview-region"></div>
+      <div id="overviewWindow" class="overview-window"></div>
+    </div>
+
+    <div class="counters" aria-live="polite">
+      <div class="counter"><span class="counter-label">IN</span><span id="counterIn" class="counter-value">00:00.000</span></div>
+      <div class="counter"><span class="counter-label">OUT</span><span id="counterOut" class="counter-value">00:00.000</span></div>
+      <div class="counter"><span class="counter-label">SEL</span><span id="counterSel" class="counter-value">00:00.000</span></div>
+      <div class="counter counter-pos"><span class="counter-label">POS</span><span id="counterPos" class="counter-value">00:00.000</span></div>
+      <div class="counter"><span class="counter-label">TOTAL</span><span id="counterTotal" class="counter-value">00:00.000</span></div>
+    </div>
+
+    <div class="transport">
+      <button id="btnPlaySel" class="transport-btn primary" type="button">&#9654; Play selection</button>
+      <button id="btnPlayAll" class="transport-btn" type="button">Play full track</button>
+      <button id="btnStop" class="transport-btn" type="button">&#9632; Stop</button>
+      <button id="btnLoop" class="transport-btn toggle" type="button" aria-pressed="false">&#8635; Loop</button>
+    </div>
+
+    <div class="controls-row">
+      <label class="control zoom-control">
+        <span>Zoom <b id="zoomValue">1.0&times;</b></span>
+        <input type="range" id="zoomRange" min="1" max="24" step="0.1" value="1" />
+      </label>
+      <label class="control volume-control">
+        <span>Volume <b id="volumeValue">100%</b></span>
+        <input type="range" id="volumeRange" min="0" max="1" step="0.01" value="1" />
+      </label>
+      <label class="control fade-control">
+        <input type="checkbox" id="fadeToggle" />
+        <span>Fade in / out on export</span>
+      </label>
+      <div class="control history-control">
+        <button id="btnUndo" class="icon-btn" type="button" title="Undo" disabled>&#8630;</button>
+        <button id="btnRedo" class="icon-btn" type="button" title="Redo" disabled>&#8631;</button>
+        <button id="btnResetSel" class="icon-btn" type="button" title="Reset selection to full track">&#8862;</button>
+      </div>
+    </div>
+
+    <div class="export-row">
+      <label class="control format-control">
+        <span>Export as</span>
+        <select id="formatSelect">
+          <option value="wav">WAV &middot; lossless</option>
+          <option value="mp3">MP3 &middot; ~192kbps</option>
+        </select>
+      </label>
+      <button id="btnExport" class="transport-btn primary export-btn" type="button">&#8681; Export trimmed audio</button>
+    </div>
+
+    <p id="statusMsg" class="status-msg" role="status"></p>
+
+    <details class="shortcuts">
+      <summary>Keyboard shortcuts</summary>
+      <div class="shortcuts-grid">
+        <div><kbd>Space</kbd> play / pause selection</div>
+        <div><kbd>[</kbd> set start at playhead</div>
+        <div><kbd>]</kbd> set end at playhead</div>
+        <div><kbd>&#8592;</kbd> / <kbd>&#8594;</kbd> nudge focused handle 10ms</div>
+        <div><kbd>Shift</kbd> + arrow nudge 500ms</div>
+        <div><kbd>Esc</kbd> stop playback</div>
+      </div>
+    </details>
+
+  </section>
+
+  <footer class="footer">
+    <p>Runs entirely in your browser via the Web Audio API &mdash; no upload, no server, no fees.</p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
