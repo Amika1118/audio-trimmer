@@ -1,15 +1,13 @@
-```markdown
 <div align="center">
 
 # ✂️ Audio Trimmer
 
-**Precise, in-browser audio editing — no uploads, no backend, no limits.**
+**Precise, in-browser audio editing — no uploads, no backend.**
 
-[![Static Badge](https://img.shields.io/badge/Status-Stable-brightgreen)](https://github.com/Amika1118/audio-trimmer)
-[![Static Badge](https://img.shields.io/badge/Built_With-Vanilla_JS-f7df1e)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Static Badge](https://img.shields.io/badge/Web_Audio_API-✓-4caf50)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
-[![Static Badge](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
-[![Static Badge](https://img.shields.io/badge/Hugging_Face-Space-yellow)](https://huggingface.co/spaces)
+[![Status](https://img.shields.io/badge/Status-Stable-brightgreen)](https://github.com/Amika1118/audio-trimmer)
+[![Built With](https://img.shields.io/badge/Built%20With-Vanilla%20JavaScript-f7df1e)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Web Audio API](https://img.shields.io/badge/Web%20Audio%20API-✓-4caf50)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
 </div>
 
@@ -17,96 +15,240 @@
 
 ## 📖 Overview
 
-**Audio Trimmer** is a fully client-side web application that lets you load any audio file, visually trim it using draggable waveform handles, and export the result as **WAV** or **MP3** — all within your browser.
+**Audio Trimmer** is a fully client-side web application for loading, previewing, trimming, and exporting audio directly in your browser.
 
-Everything — decoding, waveform rendering, playback, and export — runs locally via the **Web Audio API**. No file is ever uploaded to any server, there's no backend, and because it's a static app, it costs nothing to host and has no usage limits.
+Load an audio file, select the section you want using the interactive waveform handles, preview the selection, and export it as **WAV** or **MP3**.
 
-> 🚀 **Live Demo:** [Try it on Hugging Face Spaces](https://huggingface.co/spaces/your-space-name)
+All audio processing takes place locally in the browser using the **Web Audio API** and JavaScript. Your audio file is **not uploaded to a backend or third-party server**.
+
+> 🚀 **Live Demo:** Replace this with your actual Hugging Face Space URL once deployed.
 
 ---
 
 ## ✨ Features
 
-| Category | Features |
-|----------|----------|
-| **📂 Loading** | Drag-and-drop or click-to-browse — supports MP3, WAV, M4A, OGG, FLAC, and any format your browser can decode |
-| **📊 Waveform** | Interactive waveform view with **adjustable zoom** (1×–24×) and a **minimap overview** for long tracks |
-| **✂️ Trimming** | Draggable trim handles with **keyboard support** — arrow keys to nudge, Shift for coarse steps |
-| **▶️ Playback** | Play the full track or just the selection, with **optional looping** and a live playhead |
-| **📟 Readouts** | Real-time IN / OUT / SEL / POS / TOTAL time displays in a retro tape-counter style |
-| **↩️ Undo/Redo** | Full undo / redo support for trim adjustments |
-| **🎛️ Fades** | Optional **150 ms fade in/out** on export for smooth cuts |
-| **💾 Export** | Export as **lossless WAV** (built-in) or **MP3** (~192 kbps, via a small on-demand library) |
-| **⌨️ Shortcuts** | Keyboard-driven workflow — Space, `[` / `]`, arrow keys, Esc |
+| Category                | Features                                                                    |
+| ----------------------- | --------------------------------------------------------------------------- |
+| **📂 Loading**          | Drag-and-drop or file browser support                                       |
+| **🎵 Formats**          | MP3, WAV, M4A, OGG, FLAC, and other formats supported by the user's browser |
+| **📊 Waveform**         | Interactive waveform with adjustable zoom from **1× to 24×**                |
+| **🗺️ Minimap**         | Overview minimap for navigating longer audio tracks                         |
+| **✂️ Trimming**         | Draggable IN and OUT handles for precise selection                          |
+| **⌨️ Keyboard Control** | Arrow-key trimming and keyboard shortcuts                                   |
+| **▶️ Playback**         | Play the complete track or only the selected section                        |
+| **🔁 Looping**          | Optional selection looping during playback                                  |
+| **📍 Playhead**         | Live playhead showing the current playback position                         |
+| **📟 Time Readouts**    | Real-time IN, OUT, SEL, POS, and TOTAL displays                             |
+| **↩️ Undo / Redo**      | Undo and redo trim adjustments                                              |
+| **🎛️ Fades**           | Optional **150 ms fade-in and fade-out** during export                      |
+| **💾 WAV Export**       | Export selections as lossless WAV                                           |
+| **🎧 MP3 Export**       | Export selections as MP3 using `lamejs`                                     |
+| **🔒 Privacy**          | Audio processing happens locally in the browser                             |
+
+> **Note:** Actual audio format support depends on the browser's built-in audio decoding capabilities.
+
+---
+
+## 🎛️ How It Works
+
+1. **Load an audio file** using drag-and-drop or the file picker.
+2. The application decodes the audio locally using the **Web Audio API**.
+3. The waveform and minimap are generated using the **Canvas API**.
+4. Drag the **IN** and **OUT** handles to select the section you want.
+5. Preview the selection using the playback controls.
+6. Optionally enable fade-in/fade-out.
+7. Export the selection as **WAV** or **MP3**.
+
+No audio file needs to be uploaded to a server.
 
 ---
 
 ## 🖥️ Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Space` | Play / Pause |
-| `[` | Set **IN** point at playhead |
-| `]` | Set **OUT** point at playhead |
-| `←` / `→` | Nudge trim handles (fine) |
-| `Shift` + `←` / `→` | Nudge trim handles (coarse) |
-| `Esc` | Stop playback |
+| Shortcut            | Action                                    |
+| ------------------- | ----------------------------------------- |
+| `Space`             | Play / Pause                              |
+| `[`                 | Set **IN** point at the current playhead  |
+| `]`                 | Set **OUT** point at the current playhead |
+| `←` / `→`           | Fine adjustment of the trim position      |
+| `Shift` + `←` / `→` | Coarse adjustment of the trim position    |
+| `Esc`               | Stop playback                             |
+
+> **Tip:** Keyboard shortcuts may be ignored while typing in a text input or when another interactive control has focus.
+
+---
+
+## 🔊 Export Formats
+
+### WAV
+
+WAV export is handled directly by the application and provides **lossless audio output**.
+
+### MP3
+
+MP3 export uses **lamejs**, which is loaded when MP3 encoding is required.
+
+The resulting MP3 is encoded at approximately **192 kbps**.
+
+> MP3 is a lossy format, so the exported file may not contain exactly the same audio information as the original.
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 audio-trimmer/
 ├── index.html          # Application structure
-├── style.css           # "Signal bench" visual design — graphite panels, amber splice-bracket handles, mono tape-counter readouts
-├── script.js           # All app logic — decoding, waveform drawing, drag interactions, playback, WAV/MP3 export
-└── README.md           # You're here!
+├── style.css           # Application styling
+├── script.js           # Audio processing, waveform, playback and export logic
+└── README.md           # Project documentation
 ```
-
----
-
-## 🚀 Getting Started
-
-### Local Preview
-
-Any static file server works. Choose your favorite:
-
-```bash
-# Using npx
-npx serve .
-
-# Using Python
-python3 -m http.server 8000
-
-# Using Node.js http-server
-npx http-server .
-```
-
-> **Note:** Opening `index.html` directly via `file://` works in most browsers, but some restrict Web Audio / file APIs more strictly. A local server is the safer bet.
-
----
-
-## ☁️ Deploy on Hugging Face Spaces
-
-This project is configured as a **Static** Space via the YAML block in `index.html`. To deploy:
-
-1. Create a new Space at [huggingface.co/new-space](https://huggingface.co/new-space) — choose **Static** as the SDK.
-2. Add the four files (`index.html`, `style.css`, `script.js`, `README.md`) to the Space repo — either upload via the web UI or `git push`.
-3. Your Space builds instantly — no server process, just static files being served.
-
-**Zero cost, zero compute quota, zero billing.** Static Spaces are free and unmetered on Hugging Face's side (standard fair-use applies, same as any static site).
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **HTML5** — Structure
-- **CSS3** — Custom "signal bench" design system
-- **Vanilla JavaScript** — All logic, no frameworks
-- **Web Audio API** — Decoding, playback, waveform rendering
-- **Canvas API** — Waveform drawing & minimap
-- **lamejs** — On-demand MP3 encoding (loaded only when exporting MP3)
+* **HTML5** — Application structure
+* **CSS3** — Responsive UI and visual design
+* **Vanilla JavaScript** — Application logic
+* **Web Audio API** — Audio decoding and playback
+* **Canvas API** — Waveform and minimap rendering
+* **lamejs** — Client-side MP3 encoding
+
+The application does not require a frontend framework or backend server.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+You only need a modern web browser with support for the **Web Audio API**, **Canvas API**, and the audio formats you want to use.
+
+### Local Preview
+
+Because browser security policies can restrict some functionality when opening HTML files directly, running the application through a local server is recommended.
+
+#### Using Python
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000
+```
+
+#### Using Node.js
+
+```bash
+npx serve .
+```
+
+or:
+
+```bash
+npx http-server .
+```
+
+---
+
+## ☁️ Deploying to Hugging Face Spaces
+
+Audio Trimmer can be hosted as a **Static Space** because it does not require a backend server.
+
+### Steps
+
+1. Create a new Space on Hugging Face.
+2. Select **Static** as the Space SDK.
+3. Upload or push the project files:
+
+   * `index.html`
+   * `style.css`
+   * `script.js`
+   * `README.md`
+4. Wait for the Space to build and deploy.
+5. Open the generated Space URL.
+
+Since all processing is performed in the browser, the application does not require a dedicated backend or server-side audio processing.
+
+> **Important:** Hosting availability, quotas, and platform policies can change. Check Hugging Face's current Space documentation for the latest limits and terms.
+
+---
+
+## 🔐 Privacy
+
+Audio Trimmer is designed to process audio **locally in the browser**.
+
+Your selected audio file is decoded and processed using browser APIs rather than being uploaded to an application backend.
+
+This means the project does not require:
+
+* A database
+* An audio-processing server
+* User accounts
+* File uploads to an application backend
+
+> Browser memory and performance still impose practical limits on the size and length of audio files that can be processed.
+
+---
+
+## 📱 Browser Compatibility
+
+Audio decoding capabilities vary between browsers.
+
+Common formats such as **MP3** and **WAV** are generally well supported, while formats such as **M4A, OGG, and FLAC** may depend on the browser and operating system.
+
+If a particular file cannot be loaded, try converting it to a browser-compatible format such as WAV or MP3.
+
+---
+
+## 🧩 Architecture
+
+The application follows a simple client-side architecture:
+
+```text
+Audio File
+    │
+    ▼
+File API
+    │
+    ▼
+Web Audio API
+    │
+    ├──► AudioBuffer
+    │       │
+    │       ├──► Waveform Canvas
+    │       │
+    │       ├──► Minimap
+    │       │
+    │       └──► Playback
+    │
+    ▼
+Trim Selection
+    │
+    ▼
+Audio Processing
+    │
+    ├──► WAV Encoder
+    │
+    └──► MP3 Encoder (lamejs)
+    │
+    ▼
+Downloaded Audio File
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+You are free to use, modify, distribute, and build upon the project in accordance with the license terms.
+
+See [LICENSE](LICENSE) for the complete license text.
 
 ---
 
@@ -114,14 +256,8 @@ This project is configured as a **Static** Space via the YAML block in `index.ht
 
 **Amika Alankara**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Amika1118-181717?logo=github)](https://github.com/Amika1118)
-[![Hugging Face](https://img.shields.io/badge/Hugging_Face-Amika1118-ffd21e?logo=huggingface)](https://huggingface.co/Amika1118)
-
----
-
-## 📄 License
-
-MIT — feel free to use, modify, and distribute.
+* GitHub: [Amika1118](https://github.com/Amika1118)
+* Hugging Face: [Amika1118](https://huggingface.co/Amika1118)
 
 ---
 
@@ -132,4 +268,3 @@ MIT — feel free to use, modify, and distribute.
 *100% client-side. Your audio stays with you.*
 
 </div>
-```
