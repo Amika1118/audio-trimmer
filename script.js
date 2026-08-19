@@ -162,19 +162,121 @@
     setDropzoneError("");
   });
 
+  const VIDEO_EXT_RE = /\.(mp4|m4v|mov|webm|mkv|avi|3gp|ogv)$/i;
+
+  function isVideoFile(file) {
+    if (file.type && file.type.startsWith("video/")) return true;
+    if (!file.type && VIDEO_EXT_RE.test(file.name)) return true; // some browsers omit type
+    return VIDEO_EXT_RE.test(file.name) && !file.type.startsWith("audio/");
+  }
+
+  // Extracts the audio track from a video file by silently playing it back
+  // and recording its audio stream. Used as a fallback when the browser's
+  // Web Audio decoder can't pull audio straight out of the container.
+  // Necessarily takes roughly as long as the video's own duration.
+  function extractAudioFromVideo(file, onProgress) {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "auto";
+      video.playsInline = true;
+      video.muted = false;   // must stay unmuted for captureStream to carry audio
+      video.volume = 0;      // ...but silent locally
+      const url = URL.createObjectURL(file);
+      video.src = url;
+
+      let settled = false;
+      function fail(err) {
+        if (settled) return;
+        settled = true;
+        URL.revokeObjectURL(url);
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+        reject(err);
+      }
+      function succeed(blob) {
+        if (settled) return;
+        settled = true;
+        URL.revokeObjectURL(url);
+        resolve(blob);
+      }
+
+      video.addEventListener("error", () => fail(new Error("Could not read that video file.")));
+
+      video.addEventListener("loadedmetadata", async () => {
+        try {
+          const capture = video.captureStream || video.mozCaptureStream;
+          if (!capture) throw new Error("This browser can't extract audio from video.");
+          const stream = capture.call(video);
+          const audioTracks = stream.getAudioTracks();
+          if (!audioTracks.length) throw new Error("No audio track was found in that video.");
+
+          const audioStream = new MediaStream(audioTracks);
+          let mimeType = "audio/webm;codecs=opus";
+          if (!(window.MediaRecorder && MediaRecorder.isTypeSupported(mimeType))) mimeType = "audio/webm";
+          if (!(window.MediaRecorder && MediaRecorder.isTypeSupported(mimeType))) mimeType = "";
+
+          const recorder = new MediaRecorder(audioStream, mimeType ? { mimeType } : undefined);
+          const chunks = [];
+          recorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+          recorder.onerror = (e) => fail(e.error || new Error("Recording the video's audio failed."));
+          recorder.onstop = () => succeed(new Blob(chunks, { type: mimeType || "audio/webm" }));
+
+          video.addEventListener("timeupdate", () => {
+            if (onProgress && video.duration) onProgress(clamp(video.currentTime / video.duration, 0, 1));
+          });
+          video.addEventListener("ended", () => { try { recorder.stop(); } catch (_) {} });
+
+          recorder.start();
+          await video.play();
+        } catch (err) {
+          fail(err);
+        }
+      }, { once: true });
+    });
+  }
+
   async function loadFile(file) {
     if (isLoading) return;
     isLoading = true;
 
     setDropzoneError("");
-    showLoading("Reading file\u2026");
+    setStatus("");
+    const isVideo = isVideoFile(file);
+
     try {
       ensureAudioCtx();
-      const arrayBuffer = await file.arrayBuffer();
 
-      showLoading("Decoding audio\u2026");
-      await nextPaint();
-      const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+      let decoded;
+
+      if (isVideo) {
+        showLoading("Video detected \u2014 this can take a little while\u2026");
+        setStatus("You added a video file \u2014 extracting its audio track before trimming. This may take a bit, especially for longer videos.");
+        await nextPaint();
+
+        try {
+          // Fast path: many MP4 / WebM containers can be decoded directly
+          // by the Web Audio API without needing to play them back.
+          const raw = await file.arrayBuffer();
+          decoded = await audioCtx.decodeAudioData(raw.slice(0));
+        } catch (fastErr) {
+          // Fallback: silently play the video and record its audio track.
+          showLoading("Extracting audio from video\u2026 0%");
+          const audioBlob = await extractAudioFromVideo(file, (frac) => {
+            showLoading(`Extracting audio from video\u2026 ${Math.round(frac * 100)}%`);
+          });
+          showLoading("Decoding extracted audio\u2026");
+          await nextPaint();
+          const audioArrayBuffer = await audioBlob.arrayBuffer();
+          decoded = await audioCtx.decodeAudioData(audioArrayBuffer);
+        }
+      } else {
+        showLoading("Reading file\u2026");
+        const arrayBuffer = await file.arrayBuffer();
+        showLoading("Decoding audio\u2026");
+        await nextPaint();
+        decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+      }
 
       audioBuffer = decoded;
       duration = decoded.duration;
@@ -186,7 +288,7 @@
       future = [];
       updateHistoryButtons();
 
-      fileNameEl.textContent = `${file.name} \u00b7 ${formatTime(duration)} \u00b7 ${decoded.sampleRate} Hz \u00b7 ${decoded.numberOfChannels === 1 ? "mono" : "stereo"}`;
+      fileNameEl.textContent = `${file.name}${isVideo ? " \u00b7 audio extracted from video" : ""} \u00b7 ${formatTime(duration)} \u00b7 ${decoded.sampleRate} Hz \u00b7 ${decoded.numberOfChannels === 1 ? "mono" : "stereo"}`;
 
       dropzone.hidden = true;
       bench.hidden = false;
@@ -204,13 +306,17 @@
       layoutWaveform();
       drawOverview();
       updateCounters();
-      setStatus("");
+      setStatus(isVideo ? "Audio extracted from your video \u2014 ready to trim." : "");
     } catch (err) {
       console.error(err);
       audioBuffer = null;
       bench.hidden = true;
       dropzone.hidden = false;
-      setDropzoneError("Couldn't decode that file. Try a standard MP3, WAV, M4A, OGG or FLAC.");
+      setDropzoneError(
+        isVideo
+          ? "Couldn't extract audio from that video. Try a standard MP4 or WEBM file, or extract the audio yourself first."
+          : "Couldn't decode that file. Try a standard MP3, WAV, M4A, OGG or FLAC \u2014 or a video file such as MP4 or WEBM."
+      );
     } finally {
       hideLoading();
       isLoading = false;

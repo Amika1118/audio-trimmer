@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Audio Trimmer — Splice &amp; Export</title>
-<meta name="description" content="A precise, entirely-in-browser audio trimmer. Load a track, set in/out points on the waveform, and export the cut. No uploads, no server." />
+<meta name="description" content="A precise, entirely-in-browser audio trimmer. Load a track (or a video — its audio is extracted automatically), set in/out points on the waveform, and export the cut. No uploads, no server." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -27,15 +27,15 @@
     <p class="tagline">Load a take, mark the splice, export the cut. Nothing ever leaves your browser.</p>
   </header>
 
-  <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose an audio file to load">
+  <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose an audio or video file to load">
     <svg class="drop-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
       <path d="M24 6v24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       <path d="M15 15l9-9 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M8 30v8a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2v-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <p class="drop-title">Drop an audio file here</p>
-    <p class="drop-sub">or click to browse &middot; MP3, WAV, M4A, OGG, FLAC</p>
-    <input type="file" id="fileInput" accept="audio/*" hidden />
+    <p class="drop-title">Drop an audio or video file here</p>
+    <p class="drop-sub">or click to browse &middot; MP3, WAV, M4A, OGG, FLAC &middot; or MP4, MOV, WEBM (audio is extracted automatically)</p>
+    <input type="file" id="fileInput" accept="audio/*,video/*" hidden />
     <p id="dropzoneStatus" class="dropzone-status" role="alert" hidden></p>
   </section>
 
