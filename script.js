@@ -3,53 +3,53 @@
 
   /* ---------------- DOM ---------------- */
 
-  const dropzone     = document.getElementById("dropzone");
-  const fileInput    = document.getElementById("fileInput");
-  const bench        = document.getElementById("bench");
-  const fileNameEl   = document.getElementById("fileName");
-  const changeFileBtn= document.getElementById("changeFile");
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  const bench = document.getElementById("bench");
+  const fileNameEl = document.getElementById("fileName");
+  const changeFileBtn = document.getElementById("changeFile");
 
-  const waveformPanel= document.getElementById("waveformPanel");
-  const waveCanvas   = document.getElementById("waveCanvas");
+  const waveformPanel = document.getElementById("waveformPanel");
+  const waveCanvas = document.getElementById("waveCanvas");
   const handlesLayer = document.getElementById("handles");
-  const regionShade  = document.getElementById("regionShade");
-  const handleStart  = document.getElementById("handleStart");
-  const handleEnd    = document.getElementById("handleEnd");
-  const playhead     = document.getElementById("playhead");
+  const regionShade = document.getElementById("regionShade");
+  const handleStart = document.getElementById("handleStart");
+  const handleEnd = document.getElementById("handleEnd");
+  const playhead = document.getElementById("playhead");
 
   const overviewCanvas = document.getElementById("overviewCanvas");
   const overviewRegion = document.getElementById("overviewRegion");
   const overviewWindow = document.getElementById("overviewWindow");
-  const overviewShell   = overviewCanvas.parentElement;
+  const overviewShell = overviewCanvas.parentElement;
 
-  const counterIn    = document.getElementById("counterIn");
-  const counterOut   = document.getElementById("counterOut");
-  const counterSel   = document.getElementById("counterSel");
-  const counterPos   = document.getElementById("counterPos");
+  const counterIn = document.getElementById("counterIn");
+  const counterOut = document.getElementById("counterOut");
+  const counterSel = document.getElementById("counterSel");
+  const counterPos = document.getElementById("counterPos");
   const counterTotal = document.getElementById("counterTotal");
 
   const btnPlaySel = document.getElementById("btnPlaySel");
   const btnPlayAll = document.getElementById("btnPlayAll");
-  const btnStop    = document.getElementById("btnStop");
-  const btnLoop    = document.getElementById("btnLoop");
+  const btnStop = document.getElementById("btnStop");
+  const btnLoop = document.getElementById("btnLoop");
 
-  const zoomRange   = document.getElementById("zoomRange");
-  const zoomValue   = document.getElementById("zoomValue");
+  const zoomRange = document.getElementById("zoomRange");
+  const zoomValue = document.getElementById("zoomValue");
   const volumeRange = document.getElementById("volumeRange");
   const volumeValue = document.getElementById("volumeValue");
-  const fadeToggle  = document.getElementById("fadeToggle");
+  const fadeToggle = document.getElementById("fadeToggle");
 
-  const btnUndo     = document.getElementById("btnUndo");
-  const btnRedo     = document.getElementById("btnRedo");
+  const btnUndo = document.getElementById("btnUndo");
+  const btnRedo = document.getElementById("btnRedo");
   const btnResetSel = document.getElementById("btnResetSel");
 
   const formatSelect = document.getElementById("formatSelect");
-  const btnExport     = document.getElementById("btnExport");
-  const statusMsg      = document.getElementById("statusMsg");
+  const btnExport = document.getElementById("btnExport");
+  const statusMsg = document.getElementById("statusMsg");
 
   const loadingOverlay = document.getElementById("loadingOverlay");
-  const loadingText     = document.getElementById("loadingText");
-  const dropzoneStatus  = document.getElementById("dropzoneStatus");
+  const loadingText = document.getElementById("loadingText");
+  const dropzoneStatus = document.getElementById("dropzoneStatus");
 
   /* ---------------- State ---------------- */
 
@@ -381,7 +381,18 @@
   function xToTime(x) { return clamp(x / pxPerSec, 0, duration); }
 
   window.addEventListener("resize", debounce(() => {
-    if (audioBuffer) { layoutWaveform(); drawOverview(); }
+    if (!audioBuffer) return;
+    const centerX = waveformPanel.scrollLeft + waveformPanel.clientWidth / 2;
+    const anchorTime = xToTime(centerX);
+    layoutWaveform();
+    drawOverview();
+    const newCenterX = timeToX(anchorTime);
+    waveformPanel.scrollLeft = clamp(
+      newCenterX - waveformPanel.clientWidth / 2,
+      0,
+      waveformPanel.scrollWidth - waveformPanel.clientWidth
+    );
+    layoutHandles();
   }, 150));
 
   waveformPanel.addEventListener("scroll", () => layoutHandles());
@@ -394,9 +405,29 @@
   /* ---------------- Zoom / Volume ---------------- */
 
   zoomRange.addEventListener("input", () => {
+    if (!audioBuffer) {
+      zoom = parseFloat(zoomRange.value);
+      zoomValue.textContent = zoom.toFixed(1) + "\u00d7";
+      return;
+    }
+    // scrollLeft is a raw pixel offset, but pxPerSec changes with zoom —
+    // so holding scrollLeft steady silently shows a different span of time
+    // after every zoom change. Anchor on the time currently centered in
+    // view (using the OLD pxPerSec) and restore that same center afterward.
+    const centerX = waveformPanel.scrollLeft + waveformPanel.clientWidth / 2;
+    const anchorTime = xToTime(centerX);
+
     zoom = parseFloat(zoomRange.value);
     zoomValue.textContent = zoom.toFixed(1) + "\u00d7";
-    if (audioBuffer) layoutWaveform();
+    layoutWaveform(); // recomputes pxPerSec for the new zoom level
+
+    const newCenterX = timeToX(anchorTime);
+    waveformPanel.scrollLeft = clamp(
+      newCenterX - waveformPanel.clientWidth / 2,
+      0,
+      waveformPanel.scrollWidth - waveformPanel.clientWidth
+    );
+    layoutHandles(); // scrollLeft changed -> refresh the overview "viewport" box too
   });
 
   volumeRange.addEventListener("input", () => {
@@ -442,7 +473,7 @@
       if (dragTarget !== target) return;
       dragTarget = null;
       el.classList.remove("dragging");
-      try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+      try { el.releasePointerCapture(e.pointerId); } catch (_) { }
     };
   }
 
@@ -781,7 +812,7 @@
 
   function stopPlayback() {
     if (playSource) {
-      try { playSource.onended = null; playSource.stop(); } catch (_) {}
+      try { playSource.onended = null; playSource.stop(); } catch (_) { }
       playSource.disconnect();
       playSource = null;
     }
