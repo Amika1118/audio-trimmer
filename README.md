@@ -21,7 +21,7 @@ Load an audio file, select the section you want using the interactive waveform h
 
 All audio processing takes place locally in the browser using the **Web Audio API** and JavaScript. Your audio file is **not uploaded to a backend or third-party server**.
 
-> 🚀 **Live Demo:** Replace this with your actual Hugging Face Space URL once deployed.
+> 🚀 **Live Demo:** https://amika1118.github.io/audio-trimmer/
 
 ---
 
