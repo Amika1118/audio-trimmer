@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#14161c" />
-<meta name="color-scheme" content="dark" />
-<link rel="icon" href="favicon.ico" sizes="any" />
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
-<link rel="manifest" href="manifest.webmanifest" />
-<link rel="preload" href="fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="stylesheet" href="css/base.css" />
-<link rel="stylesheet" href="css/pages.css" />
-<title>Help - Audio Trimmer</title>
-<meta name="description" content="Step-by-step help for Audio Trimmer: trim a track, pull audio from a video, set exact times, and fix common problems." />
-<script type="module" src="js/help.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#14161c" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preload" href="fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <title>Audio Trimmer | Help</title>
+  <meta name="description"
+    content="Step-by-step help for Audio Trimmer: trim a track, pull audio from a video, set exact times, and fix common problems." />
+  <script type="module" src="js/help.js"></script>
 </head>
+
 <body>
   <div class="page">
     <header class="page-bar">
       <a class="back-pill" href="./">
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3m0 0 4-4M3 8l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M13 8H3m0 0 4-4M3 8l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
         <img src="assets/logo.svg" alt="" />
         <span>Back to Audio Trimmer</span>
       </a>
@@ -36,41 +42,62 @@
 
       <nav class="guide-picker" aria-label="Guides">
         <a class="guide-pick" href="#trim">
-          <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">
+              <path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" />
+            </svg></span>
           <span><b>Trim a track</b><small>audio file &rarr; clip</small></span>
         </a>
         <a class="guide-pick" href="#video">
-          <span class="icon-tile teal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="6" width="13" height="12" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="m16.5 10.5 4-2.3v7.6l-4-2.3" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <span class="icon-tile teal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">
+              <rect x="3.5" y="6" width="13" height="12" rx="2.5" stroke="currentColor" stroke-width="1.8" />
+              <path d="m16.5 10.5 4-2.3v7.6l-4-2.3" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+            </svg></span>
           <span><b>Use a video&rsquo;s sound</b><small>video &rarr; audio clip</small></span>
         </a>
         <a class="guide-pick" href="#precision">
-          <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 9v4.2l2.6 1.6M9.5 3h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <span class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.8" />
+              <path d="M12 9v4.2l2.6 1.6M9.5 3h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg></span>
           <span><b>Set exact times</b><small>type or nudge</small></span>
         </a>
       </nav>
 
       <section class="card" id="trim" aria-labelledby="trim-title">
         <div class="guide-head">
-          <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">
+              <path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" />
+            </svg></div>
           <div>
             <p class="page-kicker">From one file to one clip</p>
             <h2 id="trim-title">Trim a track</h2>
           </div>
         </div>
         <ol class="steps">
-          <li><b>Load your file.</b> Drop an audio file on the box, or click it to browse. MP3, WAV, M4A, OGG and FLAC work in most browsers.</li>
-          <li><b>Mark what to keep.</b> Drag the two amber handles on the waveform. The shaded area between IN and OUT is the part you&rsquo;ll keep.</li>
-          <li><b>Listen to it.</b> Press <b>Play selection</b> (or the space bar). Turn on <b>Loop</b> to hear the section repeat while you adjust the handles.</li>
-          <li><b>Choose a format.</b> WAV keeps full quality. MP3 makes a smaller file. Tick <b>Fade in / out</b> to soften the start and end over 150 ms.</li>
-          <li><b>Export.</b> Select <b>Export trimmed audio</b>. Your browser saves the clip, named like <b>song-trimmed.wav</b>, to your downloads.</li>
+          <li><b>Load your file.</b> Drop an audio file on the box, or click it to browse. MP3, WAV, M4A, OGG and FLAC
+            work in most browsers.</li>
+          <li><b>Mark what to keep.</b> Drag the two amber handles on the waveform. The shaded area between IN and OUT
+            is the part you&rsquo;ll keep.</li>
+          <li><b>Listen to it.</b> Press <b>Play selection</b> (or the space bar). Turn on <b>Loop</b> to hear the
+            section repeat while you adjust the handles.</li>
+          <li><b>Choose a format.</b> WAV keeps full quality. MP3 makes a smaller file. Tick <b>Fade in / out</b> to
+            soften the start and end over 150 ms.</li>
+          <li><b>Export.</b> Select <b>Export trimmed audio</b>. Your browser saves the clip, named like
+            <b>song-trimmed.wav</b>, to your downloads.</li>
         </ol>
-        <p class="note"><b>Need to be more precise?</b> Drag the <b>Zoom</b> slider to stretch the waveform, and use the thin strip underneath to scroll along it.</p>
+        <p class="note"><b>Need to be more precise?</b> Drag the <b>Zoom</b> slider to stretch the waveform, and use the
+          thin strip underneath to scroll along it.</p>
         <a class="btn-link" href="./">Open the trimmer</a>
       </section>
 
       <section class="card" id="video" aria-labelledby="video-title">
         <div class="guide-head">
-          <div class="icon-tile teal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="6" width="13" height="12" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="m16.5 10.5 4-2.3v7.6l-4-2.3" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+          <div class="icon-tile teal" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">
+              <rect x="3.5" y="6" width="13" height="12" rx="2.5" stroke="currentColor" stroke-width="1.8" />
+              <path d="m16.5 10.5 4-2.3v7.6l-4-2.3" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+            </svg></div>
           <div>
             <p class="page-kicker">Keep the sound, skip the picture</p>
             <h2 id="video-title">Use a video&rsquo;s sound</h2>
@@ -78,30 +105,45 @@
         </div>
         <ol class="steps">
           <li><b>Add the video.</b> Drop an MP4, MOV or WEBM file on the box, or click it to browse.</li>
-          <li><b>Wait for the audio.</b> Some videos open straight away. For others, the video plays silently in the background while its sound is recorded, which takes about as long as the video. A percentage shows the progress. Keep this tab open until it finishes.</li>
-          <li><b>Trim as usual.</b> Once the waveform appears, set IN and OUT exactly as you would for any audio file.</li>
+          <li><b>Wait for the audio.</b> Some videos open straight away. For others, the video plays silently in the
+            background while its sound is recorded, which takes about as long as the video. A percentage shows the
+            progress. Keep this tab open until it finishes.</li>
+          <li><b>Trim as usual.</b> Once the waveform appears, set IN and OUT exactly as you would for any audio file.
+          </li>
           <li><b>Export.</b> Save the clip as WAV or MP3. The video itself isn&rsquo;t changed or exported.</li>
         </ol>
-        <p class="note"><b>Tip:</b> A shorter video is much quicker. If you only need part of a long video, trim it in a video app first, then bring the shorter file here.</p>
+        <p class="note"><b>Tip:</b> A shorter video is much quicker. If you only need part of a long video, trim it in a
+          video app first, then bring the shorter file here.</p>
         <a class="btn-link" href="./">Open the trimmer</a>
       </section>
 
       <section class="card" id="precision" aria-labelledby="precision-title">
         <div class="guide-head">
-          <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 9v4.2l2.6 1.6M9.5 3h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <div class="icon-tile" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="13" r="7.5" stroke="currentColor" stroke-width="1.8" />
+              <path d="M12 9v4.2l2.6 1.6M9.5 3h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg></div>
           <div>
             <p class="page-kicker">To the millisecond</p>
             <h2 id="precision-title">Set exact times</h2>
           </div>
         </div>
         <ol class="steps">
-          <li><b>Type a time.</b> Click the <b>IN</b> or <b>OUT</b> readout and type, for example <b>01:23.500</b>. Press <kbd class="k">Enter</kbd> to apply or <kbd class="k">Esc</kbd> to cancel.</li>
-          <li><b>Edit one part.</b> Click just the minutes, seconds or milliseconds to change only that part. <kbd class="k">&uarr;</kbd> and <kbd class="k">&darr;</kbd> change it by one, and <kbd class="k">&larr;</kbd> and <kbd class="k">&rarr;</kbd> move between parts.</li>
-          <li><b>Nudge a handle.</b> Press <kbd class="k">Tab</kbd> to focus a handle, then use <kbd class="k">&larr;</kbd> and <kbd class="k">&rarr;</kbd> to move it 10 ms. Hold <kbd class="k">Shift</kbd> to move it 500 ms.</li>
-          <li><b>Mark from the playhead.</b> Click the waveform (or play it) to place the playhead, then press <kbd class="k">[</kbd> to set IN or <kbd class="k">]</kbd> to set OUT there.</li>
-          <li><b>Changed your mind?</b> Use the undo and redo buttons, or the reset button to select the whole track again.</li>
+          <li><b>Type a time.</b> Click the <b>IN</b> or <b>OUT</b> readout and type, for example <b>01:23.500</b>.
+            Press <kbd class="k">Enter</kbd> to apply or <kbd class="k">Esc</kbd> to cancel.</li>
+          <li><b>Edit one part.</b> Click just the minutes, seconds or milliseconds to change only that part. <kbd
+              class="k">&uarr;</kbd> and <kbd class="k">&darr;</kbd> change it by one, and <kbd class="k">&larr;</kbd>
+            and <kbd class="k">&rarr;</kbd> move between parts.</li>
+          <li><b>Nudge a handle.</b> Press <kbd class="k">Tab</kbd> to focus a handle, then use <kbd
+              class="k">&larr;</kbd> and <kbd class="k">&rarr;</kbd> to move it 10 ms. Hold <kbd class="k">Shift</kbd>
+            to move it 500 ms.</li>
+          <li><b>Mark from the playhead.</b> Click the waveform (or play it) to place the playhead, then press <kbd
+              class="k">[</kbd> to set IN or <kbd class="k">]</kbd> to set OUT there.</li>
+          <li><b>Changed your mind?</b> Use the undo and redo buttons, or the reset button to select the whole track
+            again.</li>
         </ol>
-        <p class="note"><b>Shortcuts pause while you type.</b> The space bar and bracket keys are ignored when a text box or the format menu has focus. Click an empty part of the page to use them again.</p>
+        <p class="note"><b>Shortcuts pause while you type.</b> The space bar and bracket keys are ignored when a text
+          box or the format menu has focus. Click an empty part of the page to use them again.</p>
         <a class="btn-link" href="./">Open the trimmer</a>
       </section>
 
@@ -111,30 +153,48 @@
 
         <details class="faq">
           <summary>My file won&rsquo;t load</summary>
-          <div class="faq-body"><p>Your browser does the decoding, so support depends on the browser. MP3 and WAV work almost everywhere. If an M4A, OGG or FLAC file fails, convert it to WAV or MP3 and try again. Very long or very large files can also run out of memory, and a video with no sound track has nothing to extract.</p></div>
+          <div class="faq-body">
+            <p>Your browser does the decoding, so support depends on the browser. MP3 and WAV work almost everywhere. If
+              an M4A, OGG or FLAC file fails, convert it to WAV or MP3 and try again. Very long or very large files can
+              also run out of memory, and a video with no sound track has nothing to extract.</p>
+          </div>
         </details>
 
         <details class="faq">
           <summary>Getting audio from a video takes a long time</summary>
-          <div class="faq-body"><p>When a browser can&rsquo;t read the video directly, it has to play the whole video to record its sound. That takes about as long as the video itself. MP4 and WEBM files are the most likely to open quickly.</p></div>
+          <div class="faq-body">
+            <p>When a browser can&rsquo;t read the video directly, it has to play the whole video to record its sound.
+              That takes about as long as the video itself. MP4 and WEBM files are the most likely to open quickly.</p>
+          </div>
         </details>
 
         <details class="faq">
           <summary>The MP3 export failed</summary>
-          <div class="faq-body"><p>The MP3 encoder is fetched the first time you export an MP3. If it can&rsquo;t load, for example because the connection dropped, export as WAV instead, or reload the page and try again.</p></div>
+          <div class="faq-body">
+            <p>The MP3 encoder is fetched the first time you export an MP3. If it can&rsquo;t load, for example because
+              the connection dropped, export as WAV instead, or reload the page and try again.</p>
+          </div>
         </details>
 
         <details class="faq">
           <summary>The clip has a click at the start or end</summary>
-          <div class="faq-body"><p>A cut in the middle of a sound can leave a sudden jump. Tick <b>Fade in / out on export</b> to smooth the first and last 150 ms.</p></div>
+          <div class="faq-body">
+            <p>A cut in the middle of a sound can leave a sudden jump. Tick <b>Fade in / out on export</b> to smooth the
+              first and last 150 ms.</p>
+          </div>
         </details>
 
         <details class="faq">
           <summary>Where did my exported file go?</summary>
-          <div class="faq-body"><p>It&rsquo;s saved by your browser as a normal download, usually in your Downloads folder, named after the original file with <b>-trimmed</b> added. Some browsers ask where to save it first.</p></div>
+          <div class="faq-body">
+            <p>It&rsquo;s saved by your browser as a normal download, usually in your Downloads folder, named after the
+              original file with <b>-trimmed</b> added. Some browsers ask where to save it first.</p>
+          </div>
         </details>
 
-        <p class="feedback-box">Still stuck, or have an idea to improve Audio Trimmer? <a href="https://www.linkedin.com/in/amika-ranmeth" target="_blank" rel="noopener noreferrer">Send me feedback on LinkedIn</a>.</p>
+        <p class="feedback-box">Still stuck, or have an idea to improve Audio Trimmer? <a
+            href="https://www.linkedin.com/in/amika-ranmeth" target="_blank" rel="noopener noreferrer">Send me feedback
+            on LinkedIn</a>.</p>
       </section>
     </main>
 
@@ -145,4 +205,5 @@
     </footer>
   </div>
 </body>
+
 </html>

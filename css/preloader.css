@@ -1,4 +1,4 @@
-/* App preloader — logo splash shown while the page, fonts and scripts load.
+/* App preloader - logo splash shown while the page, fonts and scripts load.
    Separate from the audio "loading overlay" (that one appears when a file is decoded).
    Loaded as a normal stylesheet so it paints on first render; colours are literal on purpose. */
 
