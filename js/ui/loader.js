@@ -4,12 +4,20 @@ import { PEAK_RESOLUTION } from "../config.js";
 import { formatTime, nextPaint } from "../utils.js";
 import { ensureAudioCtx } from "../audio/context.js";
 import { computePeaks } from "../audio/peaks.js";
+import { generateSample } from "../audio/sample.js";
 import { isVideoFile, extractAudioFromVideo } from "../audio/videoExtract.js";
 import { stopPlayback } from "../audio/playback.js";
 import { layoutWaveform, drawOverview } from "./waveform.js";
 import { updateCounters } from "./counters.js";
 import { resetHistory } from "./history.js";
 import { setStatus, setDropzoneError, showLoading, hideLoading } from "./status.js";
+
+// Switches between the empty start screen and the editor.
+function showEditor(show) {
+  dom.dropzone.hidden = show;
+  dom.introExtras.hidden = show;
+  dom.bench.hidden = !show;
+}
 
 async function decodeVideo(file) {
   const ctx = state.audioCtx;
@@ -27,6 +35,37 @@ async function decodeVideo(file) {
     await nextPaint();
     return ctx.decodeAudioData(await audioBlob.arrayBuffer());
   }
+}
+
+// Shared by file loading and the sample clip: puts a decoded buffer on the bench.
+async function openBuffer(decoded, { fileName, label, isVideo = false }) {
+  state.audioBuffer = decoded;
+  state.duration = decoded.duration;
+  state.sourceFileName = fileName.replace(/\.[^/.]+$/, "") || "track";
+  state.selStart = 0;
+  state.selEnd = state.duration;
+  state.playOffset = 0;
+  resetHistory();
+
+  dom.fileName.textContent =
+    `${label}${isVideo ? " \u00b7 audio extracted from video" : ""} \u00b7 ${formatTime(state.duration)}` +
+    ` \u00b7 ${decoded.sampleRate} Hz \u00b7 ${decoded.numberOfChannels === 1 ? "mono" : "stereo"}`;
+
+  showEditor(true);
+
+  showLoading("Rendering waveform\u2026");
+  await nextPaint();
+  state.peaksCache = computePeaks(state.audioBuffer, PEAK_RESOLUTION);
+
+  state.zoom = 1;
+  dom.zoomRange.value = "1";
+  dom.zoomValue.textContent = "1.0\u00d7";
+
+  await nextPaint();
+  layoutWaveform();
+  drawOverview();
+  updateCounters();
+  setStatus(isVideo ? "Audio extracted from your video \u2014 ready to trim." : "");
 }
 
 export async function loadFile(file) {
@@ -54,39 +93,11 @@ export async function loadFile(file) {
       decoded = await state.audioCtx.decodeAudioData(arrayBuffer.slice(0));
     }
 
-    state.audioBuffer = decoded;
-    state.duration = decoded.duration;
-    state.sourceFileName = file.name.replace(/\.[^/.]+$/, "") || "track";
-    state.selStart = 0;
-    state.selEnd = state.duration;
-    state.playOffset = 0;
-    resetHistory();
-
-    dom.fileName.textContent =
-      `${file.name}${isVideo ? " \u00b7 audio extracted from video" : ""} \u00b7 ${formatTime(state.duration)}` +
-      ` \u00b7 ${decoded.sampleRate} Hz \u00b7 ${decoded.numberOfChannels === 1 ? "mono" : "stereo"}`;
-
-    dom.dropzone.hidden = true;
-    dom.bench.hidden = false;
-
-    showLoading("Rendering waveform\u2026");
-    await nextPaint();
-    state.peaksCache = computePeaks(state.audioBuffer, PEAK_RESOLUTION);
-
-    state.zoom = 1;
-    dom.zoomRange.value = "1";
-    dom.zoomValue.textContent = "1.0\u00d7";
-
-    await nextPaint();
-    layoutWaveform();
-    drawOverview();
-    updateCounters();
-    setStatus(isVideo ? "Audio extracted from your video \u2014 ready to trim." : "");
+    await openBuffer(decoded, { fileName: file.name, label: file.name, isVideo });
   } catch (err) {
     console.error(err);
     state.audioBuffer = null;
-    dom.bench.hidden = true;
-    dom.dropzone.hidden = false;
+    showEditor(false);
     setDropzoneError(
       isVideo
         ? "Couldn't extract audio from that video. Try a standard MP4 or WEBM file, or extract the audio yourself first."
@@ -98,8 +109,33 @@ export async function loadFile(file) {
   }
 }
 
+export async function loadSample() {
+  if (state.isLoading) return;
+  state.isLoading = true;
+
+  setDropzoneError("");
+  setStatus("");
+
+  try {
+    ensureAudioCtx();
+    showLoading("Generating sample clip\u2026");
+    await nextPaint();
+    const buffer = generateSample(state.audioCtx);
+    await openBuffer(buffer, { fileName: "sample-clip.wav", label: "Sample clip (generated)" });
+    setStatus("Sample loaded. Drag the amber handles, press play, then export your cut.");
+  } catch (err) {
+    console.error(err);
+    state.audioBuffer = null;
+    showEditor(false);
+    setDropzoneError("Couldn't create the sample clip in this browser.");
+  } finally {
+    hideLoading();
+    state.isLoading = false;
+  }
+}
+
 export function initLoader() {
-  const { dropzone, fileInput, changeFile, bench } = dom;
+  const { dropzone, fileInput, changeFile } = dom;
 
   dropzone.addEventListener("click", () => fileInput.click());
   dropzone.addEventListener("keydown", (e) => {
@@ -121,9 +157,9 @@ export function initLoader() {
   });
   changeFile.addEventListener("click", () => {
     stopPlayback();
-    bench.hidden = true;
-    dropzone.hidden = false;
+    showEditor(false);
     fileInput.value = "";
     setDropzoneError("");
+    window.dispatchEvent(new Event("resize")); // redraw the empty-state preview at the right size
   });
 }

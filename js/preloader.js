@@ -6,7 +6,7 @@
   var el = document.getElementById("preloader");
   if (!el) return;
 
-  var MIN_MS = 450;   // measured from navigation start, so a fast load doesn't flash
+  var MIN_MS = 1500;   // measured from navigation start, so a fast load doesn't flash
   var MAX_MS = 4000;  // never trap the user behind the splash
   var finished = false;
 

@@ -1,297 +1,240 @@
----
-title: Audio Trimmer
-emoji: ✂️
-colorFrom: yellow
-colorTo: gray
-sdk: static
-pinned: false
-license: mit
----
-
 <div align="center">
 
 # ✂️ Audio Trimmer
 
-**Precise, in-browser audio editing - no uploads, no backend.**
+### Precise audio editing, right in your browser.
 
-[![Status](https://img.shields.io/badge/Status-Stable-brightgreen)](https://github.com/Amika1118/audio-trimmer)
-[![Built With](https://img.shields.io/badge/Built%20With-Vanilla%20JavaScript-f7df1e)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Web Audio API](https://img.shields.io/badge/Web%20Audio%20API-✓-4caf50)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
-[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+Trim, preview, and export audio without uploading your files or relying on an audio-processing backend.
+
+[![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla%20ES%20Modules-f7df1e?logo=javascript&logoColor=222)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Web Audio API](https://img.shields.io/badge/Audio-Web%20Audio%20API-4caf50)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+[**View source on GitHub**](https://github.com/Amika1118/audio-trimmer) · [**Hugging Face profile**](https://huggingface.co/amika-alankara)
 
 </div>
 
 ---
 
-## 📖 Overview
+## Overview
 
-**Audio Trimmer** is a fully client-side web application for loading, previewing, trimming, and exporting audio directly in your browser.
+**Audio Trimmer** is a lightweight, client-side audio editor for cutting and exporting audio directly in a web browser. Load a file, make a selection on the interactive waveform, preview the result, and export the selected segment as a WAV or MP3 file.
 
-Load an audio file, select the section you want using the interactive waveform handles, preview the selection, and export it as **WAV** or **MP3**.
+Audio decoding, playback, trimming, and export are handled locally with browser APIs and JavaScript. **Your audio is not uploaded to an application backend.**
 
-All audio processing takes place locally in the browser using the **Web Audio API** and JavaScript. Your audio file is **not uploaded to a backend or third-party server**.
+## Features
 
-> 🚀 **Live Demo:** https://amika1118.github.io/audio-trimmer/
+| Area | Capabilities |
+|---|---|
+| **File import** | Drag and drop or browse for an audio file. Video files in supported formats can also be loaded, with their audio track extracted for editing. |
+| **Format support** | MP3, WAV, M4A, OGG, FLAC, and other formats supported by the browser. |
+| **Waveform editor** | Interactive waveform with adjustable zoom from **1× to 24×**. |
+| **Minimap** | Track overview for navigating longer recordings. |
+| **Precise trimming** | Draggable **IN** and **OUT** handles, keyboard adjustments, and live time readouts. |
+| **Playback** | Play the full track or only the selected segment, with a live playhead and optional selection looping. |
+| **Editing history** | Undo and redo trim adjustments. |
+| **Fade effects** | Optional **150 ms fade-in and fade-out** when exporting. |
+| **Export** | Save the selected audio as lossless WAV or MP3 encoded at approximately **192 kbps**. |
+| **Sample audio** | Generate a short sample beat in the browser to explore the editor without importing a file. |
+| **Built-in guidance** | Dedicated Help and Privacy pages, accessible from the application footer. |
+| **Privacy-focused design** | Audio processing is local, and the fonts and MP3 encoder are bundled with the application. |
 
----
+> **Format support note:** The formats listed above depend on the browser and operating system. A format being listed does not guarantee that every browser can decode it.
 
-## ✨ Features
+## How to Use
 
-| Category                | Features                                                                    |
-| ----------------------- | --------------------------------------------------------------------------- |
-| **📂 Loading**          | Drag-and-drop or file browser support                                       |
-| **🎵 Formats**          | MP3, WAV, M4A, OGG, FLAC, and other formats supported by the user's browser |
-| **📊 Waveform**         | Interactive waveform with adjustable zoom from **1× to 24×**                |
-| **🗺️ Minimap**         | Overview minimap for navigating longer audio tracks                         |
-| **✂️ Trimming**         | Draggable IN and OUT handles for precise selection                          |
-| **⌨️ Keyboard Control** | Arrow-key trimming and keyboard shortcuts                                   |
-| **▶️ Playback**         | Play the complete track or only the selected section                        |
-| **🔁 Looping**          | Optional selection looping during playback                                  |
-| **📍 Playhead**         | Live playhead showing the current playback position                         |
-| **📟 Time Readouts**    | Real-time IN, OUT, SEL, POS, and TOTAL displays                             |
-| **↩️ Undo / Redo**      | Undo and redo trim adjustments                                              |
-| **🎛️ Fades**           | Optional **150 ms fade-in and fade-out** during export                      |
-| **💾 WAV Export**       | Export selections as lossless WAV                                           |
-| **🎧 MP3 Export**       | Export selections as MP3 using `lamejs`                                     |
-| **🎬 Video**            | Drop a video (MP4, MOV, WEBM) and its audio track is extracted automatically |
-| **⏳ Preloader**         | Logo splash while the app loads, separate from the audio-decoding overlay    |
-| **🆘 Help & Privacy**   | Built-in `help.html` and `privacy.html` pages, linked from the footer        |
-| **🔒 Privacy**          | Audio processing happens locally; fonts and encoder are self-hosted          |
+1. **Import a file** by dragging it into the application or using the file picker.
+2. **Wait for decoding** while the browser loads the audio and generates the waveform.
+3. **Choose a section** by moving the IN and OUT handles on the waveform.
+4. **Refine the selection** using the zoom controls, minimap, time readouts, or keyboard shortcuts.
+5. **Preview your edit** by playing the complete track or the selected section. Enable looping or fade effects when needed.
+6. **Export the result** as WAV or MP3.
 
-> **Note:** Actual audio format support depends on the browser's built-in audio decoding capabilities.
+No account or server-side upload is required.
 
----
+## Keyboard Shortcuts
 
-## 🎛️ How It Works
+| Shortcut | Action |
+|---|---|
+| `Space` | Play or pause |
+| `[` | Set the IN point at the current playhead position |
+| `]` | Set the OUT point at the current playhead position |
+| `←` / `→` | Fine adjustment of the trim position |
+| `Shift` + `←` / `→` | Coarse adjustment of the trim position |
+| `Esc` | Stop playback |
 
-1. **Load an audio file** using drag-and-drop or the file picker.
-2. The application decodes the audio locally using the **Web Audio API**.
-3. The waveform and minimap are generated using the **Canvas API**.
-4. Drag the **IN** and **OUT** handles to select the section you want.
-5. Preview the selection using the playback controls.
-6. Optionally enable fade-in/fade-out.
-7. Export the selection as **WAV** or **MP3**.
+> **Tip:** Shortcuts may not work while you are typing in an input or when another interactive control has focus.
 
-No audio file needs to be uploaded to a server.
-
----
-
-## 🖥️ Keyboard Shortcuts
-
-| Shortcut            | Action                                    |
-| ------------------- | ----------------------------------------- |
-| `Space`             | Play / Pause                              |
-| `[`                 | Set **IN** point at the current playhead  |
-| `]`                 | Set **OUT** point at the current playhead |
-| `←` / `→`           | Fine adjustment of the trim position      |
-| `Shift` + `←` / `→` | Coarse adjustment of the trim position    |
-| `Esc`               | Stop playback                             |
-
-> **Tip:** Keyboard shortcuts may be ignored while typing in a text input or when another interactive control has focus.
-
----
-
-## 🔊 Export Formats
+## Export Formats
 
 ### WAV
 
-WAV export is handled directly by the application and provides **lossless audio output**.
+WAV export is handled by the application and preserves the audio as lossless output.
 
 ### MP3
 
-MP3 export uses **lamejs**, bundled in `vendor/` and loaded only when MP3 encoding is first needed (no CDN).
+MP3 export uses [lamejs](https://github.com/zhuker/lamejs), bundled locally in `vendor/`. The encoder is loaded only when MP3 export is first requested; no CDN is needed. The output is encoded at approximately **192 kbps**.
 
-The resulting MP3 is encoded at approximately **192 kbps**.
+MP3 is a lossy format, so an exported MP3 may not retain every detail of the original audio.
 
-> MP3 is a lossy format, so the exported file may not contain exactly the same audio information as the original.
+## Tech Stack
 
----
+| Technology | Role |
+|---|---|
+| **HTML5** | Application structure |
+| **CSS3** | Responsive layout, styling, and visual design |
+| **Vanilla JavaScript (ES modules)** | Application logic, organised into focused modules |
+| **Web Audio API** | Audio decoding, playback, and processing |
+| **Canvas API** | Waveform and minimap rendering |
+| **lamejs** | Client-side MP3 encoding |
 
-## 📁 Project Structure
+The application has **no frontend framework, build step, or audio-processing backend**.
+
+## Project Structure
 
 ```text
 audio-trimmer/
-├── index.html              # Main app
-├── help.html               # Step-by-step help page
-├── privacy.html            # Privacy explainer
-├── manifest.webmanifest    # Install / home-screen metadata
+├── index.html                 # Main application
+├── help.html                  # Step-by-step help page
+├── privacy.html               # Privacy information
+├── manifest.webmanifest       # Install and home-screen metadata
 ├── favicon.ico
 ├── robots.txt
-├── _headers                # Optional security + cache headers (Netlify / Cloudflare Pages)
+├── _headers                   # Optional headers for supported static hosts
 ├── assets/
-│   ├── logo.svg            # Logo (used by the preloader and pages)
-│   └── icons/              # icon-192, icon-512, apple-touch-icon
+│   ├── logo.svg               # Logo used by the preloader and pages
+│   └── icons/                  # App and device icons
 ├── css/
-│   ├── preloader.css       # Logo preloader (loaded first)
-│   ├── noscript.css        # Hides the preloader when JS is off
-│   ├── base.css            # Fonts, design tokens, layout, footer
-│   ├── app.css             # Dropzone, waveform, counters, controls
-│   └── pages.css           # Help + privacy pages
-├── fonts/                  # Self-hosted Space Grotesk, Inter, JetBrains Mono (woff2)
+│   ├── preloader.css          # Logo preloader styles
+│   ├── noscript.css           # Fallback when JavaScript is disabled
+│   ├── base.css               # Fonts, design tokens, layout, and footer
+│   ├── app.css                # Editor, waveform, counters, and controls
+│   └── pages.css              # Help and privacy page styles
+├── fonts/                     # Self-hosted WOFF2 fonts
 ├── vendor/
-│   └── lame.min.js         # lamejs 1.2.1 (LGPL) for MP3 export
+│   └── lame.min.js            # Bundled lamejs 1.2.1 encoder
 └── js/
-    ├── main.js             # Entry point: wires modules together
-    ├── preloader.js        # Dismisses the logo preloader
-    ├── help.js             # Highlights the active guide on the help page
-    ├── config.js           # Constants
-    ├── dom.js              # Element lookups
-    ├── state.js            # Shared mutable state
-    ├── utils.js            # formatTime, clamp, parseTimeString, ...
-    ├── audio/              # context, peaks, playback, videoExtract, slice, wav, mp3, export
-    └── ui/                 # loader, waveform, handles, timeInput, history, counters, shortcuts, status, pageLinks
+    ├── main.js                # Application entry point
+    ├── preloader.js           # Preloader dismissal
+    ├── help.js                # Help-page navigation highlights
+    ├── config.js              # Application constants
+    ├── dom.js                 # DOM element references
+    ├── state.js               # Shared application state
+    ├── utils.js               # Shared utility functions
+    ├── audio/                 # Audio context, decoding, playback, trimming, and export
+    └── ui/                    # Waveform, handles, controls, history, status, and interface modules
 ```
 
----
+## Getting Started
 
-## 🛠️ Tech Stack
+### Requirements
 
-* **HTML5** - Application structure
-* **CSS3** - Responsive UI and visual design
-* **Vanilla JavaScript (ES modules)** - Application logic, split by responsibility
-* **Web Audio API** - Audio decoding and playback
-* **Canvas API** - Waveform and minimap rendering
-* **lamejs** - Client-side MP3 encoding (bundled)
+- A modern web browser with support for the **Web Audio API** and **Canvas API**.
+- A local web server to serve the application files. The project uses JavaScript ES modules, which generally cannot be loaded directly through `file://`.
 
-The application does not require a frontend framework or backend server.
+### Run locally with Python
 
----
+Open a terminal in the project folder and run:
 
-## 🚀 Getting Started
+```bash
+python -m http.server 8000
+```
 
-### Prerequisites
-
-You only need a modern web browser with support for the **Web Audio API**, **Canvas API**, and the audio formats you want to use.
-
-### Local Preview
-
-The app uses ES modules, which browsers won't load from `file://`, so run it through a local server.
-
-#### Using Python
+On systems where Python is installed as `python3`, use:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open:
+Then visit [http://localhost:8000](http://localhost:8000) in your browser.
 
-```text
-http://localhost:8000
-```
+### Run locally with Node.js
 
-#### Using Node.js
+Alternatively, use:
 
 ```bash
 npx serve .
 ```
 
----
+Open the local address printed by the command.
 
-## 🌍 Hosting
+## Deployment
 
-There is no build step: the folder is the site. All paths are relative, so it works at a domain root or under a sub-path.
+Audio Trimmer is a static website. **There is no build command**: deploy the project files as they are, with the application files in the published directory.
 
-| Host                      | How                                                                                           |
-| ------------------------- | --------------------------------------------------------------------------------------------- |
-| **Hugging Face Spaces**   | Create a Space with SDK **Static**, upload the folder contents. The README front matter is already set. |
-| **GitHub Pages**          | Push the folder, then Settings → Pages → deploy from the branch root.                         |
-| **Netlify / Cloudflare Pages** | Drag the folder in, or connect the repo (no build command, publish directory `.`). `_headers` is picked up automatically and applies a strict Content-Security-Policy. |
-| **Any static host**       | Upload the files as-is.                                                                       |
+| Hosting platform | Deployment approach |
+|---|---|
+| **Hugging Face Spaces** | Create a Space using the **Static** SDK and upload the project files. The YAML metadata at the top of this README is configured for a static Space. |
+| **GitHub Pages** | Push the project to GitHub, then configure Pages under **Settings → Pages** to deploy from the branch and folder containing the site. |
+| **Netlify / Cloudflare Pages** | Connect the repository or upload the folder. Leave the build command empty and use the project folder as the publish directory. |
+| **Other static hosts** | Upload the files while preserving the directory structure. |
 
-> The `_headers` file is optional and ignored by hosts that don't read it. If you remove the
-> `README.md` front matter for GitHub-only use, nothing else changes.
+The `_headers` file is optional and only applies on hosting platforms that support its format. It can be omitted when deploying to a host that does not use it.
 
----
+## Privacy and Processing
 
-## 🔐 Privacy
+Audio Trimmer is designed to keep audio processing in the browser:
 
-Audio Trimmer is designed to process audio **locally in the browser**.
+- Audio files are decoded and processed locally using browser APIs.
+- The application does not need an audio-processing server or an application database.
+- No user account is required.
+- The fonts and MP3 encoder are bundled with the project rather than loaded from a third-party CDN.
 
-Your selected audio file is decoded and processed using browser APIs rather than being uploaded to an application backend.
+This means the application does not upload selected audio files to its own backend. As with other browser-based editors, the size and length of files you can process depend on the available memory and performance of your device.
 
-The fonts and the MP3 encoder are bundled with the app, so no third-party CDN is contacted while it runs. The built-in **Privacy** page explains this in plain language.
+For more information, see the in-app `privacy.html` page.
 
-This means the project does not require:
+## Browser Compatibility
 
-* A database
-* An audio-processing server
-* User accounts
-* File uploads to an application backend
+Audio decoding support varies across browsers and operating systems. MP3 and WAV are commonly supported. M4A, OGG, FLAC, and video containers such as MP4, MOV, and WEBM may depend on the browser's available codecs.
 
-> Browser memory and performance still impose practical limits on the size and length of audio files that can be processed.
+If a file cannot be opened, try using a browser that supports its format or converting it to a widely supported format such as WAV or MP3.
 
----
+## Architecture
 
-## 📱 Browser Compatibility
-
-Audio decoding capabilities vary between browsers.
-
-Common formats such as **MP3** and **WAV** are generally well supported, while formats such as **M4A, OGG, and FLAC** may depend on the browser and operating system.
-
-If a particular file cannot be loaded, try converting it to a browser-compatible format such as WAV or MP3.
-
----
-
-## 🧩 Architecture
-
-The application follows a simple client-side architecture:
+The application uses a browser-based processing pipeline:
 
 ```text
-Audio File
-    │
-    ▼
-File API
-    │
-    ▼
-Web Audio API
-    │
-    ├──► AudioBuffer
-    │       │
-    │       ├──► Waveform Canvas
-    │       │
-    │       ├──► Minimap
-    │       │
-    │       └──► Playback
-    │
-    ▼
-Trim Selection
-    │
-    ▼
-Audio Processing
-    │
-    ├──► WAV Encoder
-    │
-    └──► MP3 Encoder (lamejs)
-    │
-    ▼
-Downloaded Audio File
+Audio or Video File
+        │
+        ▼
+     File API
+        │
+        ▼
+   Web Audio API ────────────────┐
+        │                       │
+        ▼                       ▼
+    AudioBuffer             Playback
+        │
+        ├──────────► Waveform Canvas
+        │
+        └──────────► Track Minimap
+        │
+        ▼
+   Trim Selection
+        │
+        ▼
+  Audio Processing
+        │
+        ├──────────► WAV Export
+        │
+        └──────────► MP3 Export (lamejs)
+                         │
+                         ▼
+                  Downloaded Audio
 ```
 
----
+## License
 
-## 📄 License
+The project is released under the **MIT License**. See [LICENSE](LICENSE) for the complete license text.
 
-This project is licensed under the **MIT License**.
+Third-party components bundled with the project, including `lamejs` and the self-hosted fonts, may be subject to their own license terms. Their respective notices should be retained when redistributing those components.
 
-You are free to use, modify, distribute, and build upon the project in accordance with the license terms.
-
-See [LICENSE](LICENSE) for the complete license text.
-
----
-
-## 👩‍💻 Author
+## Author
 
 **Amika Alankara**
 
-* GitHub: [Amika Alankara](https://github.com/Amika1118)
-* Hugging Face: [Amika Alankara](https://huggingface.co/amika-alankara)
+- **GitHub:** [Amika1118](https://github.com/Amika1118)
+- **Hugging Face:** [amika-alankara](https://huggingface.co/amika-alankara)
 
 ---
-
-<div align="center">
-
-**Made with ❤️ by Amika Alankara**
-
-*100% client-side. Your audio stays with you.*
-
-</div>

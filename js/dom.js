@@ -5,6 +5,9 @@ const $ = (id) => document.getElementById(id);
 export const dom = {
   dropzone: $("dropzone"),
   fileInput: $("fileInput"),
+  introExtras: $("introExtras"),
+  btnSample: $("btnSample"),
+  ghostCanvas: $("ghostCanvas"),
   bench: $("bench"),
   fileName: $("fileName"),
   changeFile: $("changeFile"),

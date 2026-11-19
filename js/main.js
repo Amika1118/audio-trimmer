@@ -9,6 +9,7 @@ import { initTimeInputs } from "./ui/timeInput.js";
 import { initLoader } from "./ui/loader.js";
 import { initShortcuts } from "./ui/shortcuts.js";
 import { initPageLinks } from "./ui/pageLinks.js";
+import { initEmptyState } from "./ui/emptyState.js";
 
 initVolume();
 initWaveform();
@@ -20,3 +21,4 @@ initExport();
 initLoader();
 initShortcuts();
 initPageLinks();
+initEmptyState();

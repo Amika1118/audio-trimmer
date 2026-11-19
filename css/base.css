@@ -94,6 +94,10 @@ button, input, select {
   max-width: 880px;
   margin: 0 auto;
   padding: 56px 20px 40px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---------- Hero ---------- */
@@ -131,7 +135,8 @@ button, input, select {
 /* ---------- Footer ---------- */
 
 .footer {
-  margin-top: 36px;
+  margin-top: auto;
+  padding-top: 44px;
   text-align: center;
 }
 .footer p {
@@ -220,21 +225,21 @@ button, input, select {
   align-items: center;
   gap: 8px;
   font-family: var(--font-body);
-  font-size: 13.5px;
+  font-size: 10px;
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-faint);
   text-decoration: none;
   padding: 9px 16px;
-  border: 1px solid var(--hairline);
+  /* border: 1px solid var(--hairline); */
   border-radius: var(--radius-sm);
-  background: var(--panel-raised);
-  box-shadow: var(--shadow-raised);
-  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  /* background: var(--panel-raised);
+  box-shadow: var(--shadow-raised); */
+  transition: color 0.15s ease, border-color 0.15s ease,  background 0.15s ease;
 }
 
 .footer-page-link svg {
-  width: 15px;
-  height: 15px;
+  width: 10px;
+  height: 10px;
   flex-shrink: 0;
   color: var(--amber);
 }
