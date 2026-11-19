@@ -1,0 +1,258 @@
+/* Self-hosted variable fonts (latin subset), so no third-party font requests */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../fonts/space-grotesk-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("../fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2");
+}
+
+/* ============================================================
+   Audio Trimmer — "Signal Bench" design system (shared base)
+   bg graphite / amber+teal accents / mono counter readouts
+   ============================================================ */
+
+:root {
+  --bg: #14161c;
+  --bg-grid: #191c23;
+  --panel: #1c1f27;
+  --panel-raised: #232733;
+  --panel-inset: #14161b;
+  --hairline: #2e323d;
+  --hairline-soft: #262a33;
+
+  --text: #ecedf2;
+  --text-dim: #8d93a3;
+  --text-faint: #5b606e;
+
+  --amber: #e8a33d;
+  --amber-soft: rgba(232, 163, 61, 0.16);
+  --amber-glow: rgba(232, 163, 61, 0.45);
+  --teal: #5fa8a0;
+  --teal-soft: rgba(95, 168, 160, 0.18);
+  --red: #d1584a;
+
+  --font-display: "Space Grotesk", ui-sans-serif, sans-serif;
+  --font-body: "Inter", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-panel: 0 1px 0 rgba(255,255,255,0.03) inset, 0 10px 30px rgba(0,0,0,0.35);
+  --shadow-raised: 0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; }
+
+/* Author display rules (e.g. .bench { display: flex }) would otherwise beat the UA [hidden] rule */
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  background-attachment: fixed;
+}
+
+button, input, select {
+  font-family: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.app {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 56px 20px 40px;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 44px);
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.tagline {
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 46ch;
+}
+
+/* ---------- Footer ---------- */
+
+.footer {
+  margin-top: 36px;
+  text-align: center;
+}
+.footer p {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 16px 0 10px;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 6px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.footer-link svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: var(--teal);
+  border-color: var(--teal);
+  background: var(--teal-soft);
+}
+
+.made-with {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin: 4px 0 0;
+}
+
+.made-with .heart {
+  color: var(--red);
+  display: inline-block;
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .made-with .heart {
+    animation: heart-beat 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes heart-beat {
+  0%, 100% { transform: translateY(1px) scale(1); }
+  25% { transform: translateY(1px) scale(1.18); }
+  40% { transform: translateY(1px) scale(1); }
+}
+
+
+/* ---------- Footer page links (Help / Privacy) ---------- */
+
+.footer-pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0 0;
+}
+
+.footer-page-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  padding: 9px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  background: var(--panel-raised);
+  box-shadow: var(--shadow-raised);
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.footer-page-link svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--amber);
+}
+
+.footer-page-link:hover,
+.footer-page-link:focus-visible {
+  border-color: var(--amber);
+  background: var(--amber-soft);
+}
+
+/* ---------- Responsive (shared) ---------- */
+
+@media (max-width: 600px) {
+  .app { padding: 36px 14px 28px; }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Audio Trimmer logo">
+  <defs>
+    <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0b354"/>
+      <stop offset="1" stop-color="#b9792a"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6fb9b0"/>
+      <stop offset="1" stop-color="#3f8a84"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="496" height="496" rx="112" fill="#1c1f27" stroke="#2e323d" stroke-width="8"/>
+  <circle cx="256" cy="256" r="196" fill="#14161b"/>
+  <g fill="url(#amber)">
+    <rect x="112" y="206" width="28" height="100" rx="14"/>
+    <rect x="152" y="166" width="28" height="180" rx="14"/>
+    <rect x="192" y="126" width="28" height="260" rx="14"/>
+    <rect x="292" y="126" width="28" height="260" rx="14"/>
+    <rect x="332" y="166" width="28" height="180" rx="14"/>
+    <rect x="372" y="206" width="28" height="100" rx="14"/>
+  </g>
+  <rect x="236" y="96" width="40" height="320" rx="20" fill="url(#teal)"/>
+</svg>

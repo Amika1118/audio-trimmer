@@ -1,3 +1,13 @@
+---
+title: Audio Trimmer
+emoji: ✂️
+colorFrom: yellow
+colorTo: gray
+sdk: static
+pinned: false
+license: mit
+---
+
 <div align="center">
 
 # ✂️ Audio Trimmer
@@ -43,7 +53,10 @@ All audio processing takes place locally in the browser using the **Web Audio AP
 | **🎛️ Fades**           | Optional **150 ms fade-in and fade-out** during export                      |
 | **💾 WAV Export**       | Export selections as lossless WAV                                           |
 | **🎧 MP3 Export**       | Export selections as MP3 using `lamejs`                                     |
-| **🔒 Privacy**          | Audio processing happens locally in the browser                             |
+| **🎬 Video**            | Drop a video (MP4, MOV, WEBM) and its audio track is extracted automatically |
+| **⏳ Preloader**         | Logo splash while the app loads, separate from the audio-decoding overlay    |
+| **🆘 Help & Privacy**   | Built-in `help.html` and `privacy.html` pages, linked from the footer        |
+| **🔒 Privacy**          | Audio processing happens locally; fonts and encoder are self-hosted          |
 
 > **Note:** Actual audio format support depends on the browser's built-in audio decoding capabilities.
 
@@ -86,7 +99,7 @@ WAV export is handled directly by the application and provides **lossless audio 
 
 ### MP3
 
-MP3 export uses **lamejs**, which is loaded when MP3 encoding is required.
+MP3 export uses **lamejs**, bundled in `vendor/` and loaded only when MP3 encoding is first needed (no CDN).
 
 The resulting MP3 is encoded at approximately **192 kbps**.
 
@@ -98,10 +111,35 @@ The resulting MP3 is encoded at approximately **192 kbps**.
 
 ```text
 audio-trimmer/
-├── index.html          # Application structure
-├── style.css           # Application styling
-├── script.js           # Audio processing, waveform, playback and export logic
-└── README.md           # Project documentation
+├── index.html              # Main app
+├── help.html               # Step-by-step help page
+├── privacy.html            # Privacy explainer
+├── manifest.webmanifest    # Install / home-screen metadata
+├── favicon.ico
+├── robots.txt
+├── _headers                # Optional security + cache headers (Netlify / Cloudflare Pages)
+├── assets/
+│   ├── logo.svg            # Logo (used by the preloader and pages)
+│   └── icons/              # icon-192, icon-512, apple-touch-icon
+├── css/
+│   ├── preloader.css       # Logo preloader (loaded first)
+│   ├── noscript.css        # Hides the preloader when JS is off
+│   ├── base.css            # Fonts, design tokens, layout, footer
+│   ├── app.css             # Dropzone, waveform, counters, controls
+│   └── pages.css           # Help + privacy pages
+├── fonts/                  # Self-hosted Space Grotesk, Inter, JetBrains Mono (woff2)
+├── vendor/
+│   └── lame.min.js         # lamejs 1.2.1 (LGPL) for MP3 export
+└── js/
+    ├── main.js             # Entry point: wires modules together
+    ├── preloader.js        # Dismisses the logo preloader
+    ├── help.js             # Highlights the active guide on the help page
+    ├── config.js           # Constants
+    ├── dom.js              # Element lookups
+    ├── state.js            # Shared mutable state
+    ├── utils.js            # formatTime, clamp, parseTimeString, ...
+    ├── audio/              # context, peaks, playback, videoExtract, slice, wav, mp3, export
+    └── ui/                 # loader, waveform, handles, timeInput, history, counters, shortcuts, status, pageLinks
 ```
 
 ---
@@ -110,10 +148,10 @@ audio-trimmer/
 
 * **HTML5** - Application structure
 * **CSS3** - Responsive UI and visual design
-* **Vanilla JavaScript** - Application logic
+* **Vanilla JavaScript (ES modules)** - Application logic, split by responsibility
 * **Web Audio API** - Audio decoding and playback
 * **Canvas API** - Waveform and minimap rendering
-* **lamejs** - Client-side MP3 encoding
+* **lamejs** - Client-side MP3 encoding (bundled)
 
 The application does not require a frontend framework or backend server.
 
@@ -127,7 +165,7 @@ You only need a modern web browser with support for the **Web Audio API**, **Can
 
 ### Local Preview
 
-Because browser security policies can restrict some functionality when opening HTML files directly, running the application through a local server is recommended.
+The app uses ES modules, which browsers won't load from `file://`, so run it through a local server.
 
 #### Using Python
 
@@ -147,11 +185,21 @@ http://localhost:8000
 npx serve .
 ```
 
-or:
+---
 
-```bash
-npx http-server .
-```
+## 🌍 Hosting
+
+There is no build step: the folder is the site. All paths are relative, so it works at a domain root or under a sub-path.
+
+| Host                      | How                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| **Hugging Face Spaces**   | Create a Space with SDK **Static**, upload the folder contents. The README front matter is already set. |
+| **GitHub Pages**          | Push the folder, then Settings → Pages → deploy from the branch root.                         |
+| **Netlify / Cloudflare Pages** | Drag the folder in, or connect the repo (no build command, publish directory `.`). `_headers` is picked up automatically and applies a strict Content-Security-Policy. |
+| **Any static host**       | Upload the files as-is.                                                                       |
+
+> The `_headers` file is optional and ignored by hosts that don't read it. If you remove the
+> `README.md` front matter for GitHub-only use, nothing else changes.
 
 ---
 
@@ -160,6 +208,8 @@ npx http-server .
 Audio Trimmer is designed to process audio **locally in the browser**.
 
 Your selected audio file is decoded and processed using browser APIs rather than being uploaded to an application backend.
+
+The fonts and the MP3 encoder are bundled with the app, so no third-party CDN is contacted while it runs. The built-in **Privacy** page explains this in plain language.
 
 This means the project does not require:
 

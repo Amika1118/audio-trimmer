@@ -5,15 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Audio Trimmer - Splice &amp; Export</title>
 <meta name="description" content="A precise, entirely-in-browser audio trimmer. Load a track (or a video - its audio is extracted automatically), set in/out points on the waveform, and export the cut. No uploads, no server." />
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" href="icon-512.png" type="image/png" sizes="512x512">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css" />
+<meta name="theme-color" content="#14161c" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Audio Trimmer - Splice &amp; Export" />
+<meta property="og:description" content="Trim audio and video soundtracks right in your browser. No uploads, no server." />
+<link rel="icon" href="favicon.ico" sizes="any" />
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/icons/icon-512.png" type="image/png" sizes="512x512" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="preload" href="fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/jetbrains-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="css/preloader.css" />
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/app.css" />
+<noscript><link rel="stylesheet" href="css/noscript.css" /></noscript>
+<script src="js/preloader.js" defer></script>
 </head>
 <body>
+
+<div id="preloader" class="preloader" role="status" aria-label="Loading Audio Trimmer">
+  <img class="preloader-logo" src="assets/logo.svg" width="88" height="88" alt="" />
+  <div class="preloader-track" aria-hidden="true"></div>
+</div>
 
 <div id="loadingOverlay" class="loading-overlay" hidden aria-live="assertive" role="status">
   <div class="loading-meter" aria-hidden="true">
@@ -41,6 +57,8 @@
     <input type="file" id="fileInput" accept="audio/*,video/*" hidden />
     <p id="dropzoneStatus" class="dropzone-status" role="alert" hidden></p>
   </section>
+
+  <noscript><p class="dropzone-status">Audio Trimmer needs JavaScript to decode and trim audio in your browser.</p></noscript>
 
   <section id="bench" class="bench" hidden>
 
@@ -144,6 +162,17 @@
   <footer class="footer">
     <p>Runs entirely in your browser via the Web Audio API &mdash; no upload, no server, no fees.</p>
 
+    <nav class="footer-pages" aria-label="Help and privacy">
+      <a class="footer-page-link" href="help.html" data-page-link>
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M6.1 6.3a1.9 1.9 0 1 1 2.6 1.75c-.5.22-.7.55-.7 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".85" fill="currentColor"/></svg>
+        <span>Help</span>
+      </a>
+      <a class="footer-page-link" href="privacy.html" data-page-link>
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 2.5 3.6v3.9c0 3.2 2.3 5.6 5.5 7 3.2-1.4 5.5-3.8 5.5-7V3.6L8 1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="m5.7 8 1.7 1.7 3-3.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Privacy</span>
+      </a>
+    </nav>
+
     <nav class="footer-links" aria-label="Author links">
       <a class="footer-link" href="https://github.com/Amika1118" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.64 0 8.13c0 3.6 2.29 6.65 5.47 7.73.4.08.55-.18.55-.4 0-.19-.01-.83-.01-1.51-2.01.38-2.53-.5-2.69-.96-.09-.23-.48-.96-.82-1.15-.28-.15-.68-.53-.01-.54.63-.01 1.08.59 1.23.83.72 1.23 1.87.88 2.33.67.07-.53.28-.88.51-1.08-1.78-.2-3.64-.91-3.64-4.02 0-.89.31-1.62.82-2.19-.08-.2-.36-1.03.08-2.15 0 0 .67-.22 2.2.84a7.4 7.4 0 0 1 4 0c1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.15.51.57.82 1.29.82 2.19 0 3.13-1.87 3.82-3.65 4.02.29.26.54.75.54 1.53 0 1.11-.01 1.99-.01 2.27 0 .22.15.48.55.4A8.14 8.14 0 0 0 16 8.13C16 3.64 12.42 0 8 0Z"/></svg>
@@ -164,6 +193,6 @@
 
 </div>
 
-<script src="script.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
